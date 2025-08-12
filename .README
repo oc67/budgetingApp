@@ -1,0 +1,11 @@
+App that:
+
+- enables users to create an account and log in to do transactions (authentication)
+
+- menu displays list of 10 last transactions 
+
+- lets users create a set of custom expenses name which can be linked with each expense
+
+- lets users visualise a graph that compares predicted expenses vs actual expenses in a month
+
+
