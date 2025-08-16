@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+
+
+
+
+<!--Displaying message when buget has been added successfully on new_budget page:-->
+  {% if messages %}
+
+  <style>
+.messages{
+    display: inline-block; 
+      border: 1px solid rgb(0, 0, 0);
+  background-color: rgb(76, 120, 76);
+position: fixed;              /* So it floats over the page */
+top: 60px;                    /* Distance from top */
+right: 20px;                  /* Distance from right */
+}
+
+</style>
+
+  <div class="messages">
+      {% for message in messages %}
+      
+        <b> {{ message }} </b>  <br>
+      {% endfor %}
+  </div>
+
+<!--JavaScript to display the "project created successfully" only for 5 seconds-->
+<script>
+    // Hide messages after 5 seconds
+    setTimeout(function() {
+        const messages = document.querySelector(".messages");
+        if (messages) {
+            messages.style.display = "none";
+        }
+    }, 5000); // in miliseconds (5 s)
+
+    </script>
+
+  {% endif %}
+
+
+<h2><b><u>Projects</u></b></h2>
+<br>
+
+<!--Displaying project list in a succint way:-->
+{% for project in object_list %}
+{% if budget.budget_owner.pk == request.user.CustomUser.pk %}
+
+    <div class="card">
+        <div class="card-header">
+            <span class="fw-bold">
+
+                    <a href="{{ budget.get_absolute_url }}">{{budget.budget_ID}}. {{budget.budget_month}}</a> 
+
+
+            </span> &middot;
+            <span class="test-muted">  
+            </span> 
+        </div>  
+
+        <!--For each project, only the action/decision is displayed in the list-->
+        <div class="card-footer">
+            {% for line in budget.lines.all %}
+            <p>
+                <span class="fw-bold">
+                    {{line.item_name }} &middot;
+                </span>
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+    <br>
+{% endif %}
+      
+
+{% endfor %}
+{% endblock content %}
+
+
