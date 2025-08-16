@@ -1,0 +1,76 @@
+
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<!--Displays the detail of the clicked article -->
+<div class="project-entry">
+    
+    <h2>Budget {{object.budget_ID}}: {{object.budget_month}} </h2>
+</div>
+
+<hr>
+
+<!--Displays all the comments -->
+<h4> Budget header</h4>
+
+
+<form action="" method="post">{% csrf_token %}
+    {{ budgetHeaderForm|crispy }}
+
+
+<h4> Project insights</h4>
+  <div id="formset-container">
+    {{ budgetLinesForm.management_form }}
+    <!--Displays insight lines of budget-->
+    {% for form in budgetLinesForm %}
+      <div class="line-form">
+            {{ form|crispy }}
+            {{form.DELETE|crispy}}
+
+            </div>
+            
+    {% endfor %}
+    <button type="button" id="add-line">Add Line</button>
+    <br><br>
+    <button class="btn btn-success ml-2" type="submit">Update </button>
+    
+
+   </div>
+</form>
+
+<!--Javascript code required to display multiple insight lines -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('add-line').addEventListener('click', function() {
+    const container = document.getElementById('formset-container');
+    const totalForms = document.querySelector('input[name="{{ formset.prefix }}-TOTAL_FORMS"]');
+    const currentFormCount = parseInt(totalForms.value);
+
+    // Clone the empty form template (you need to prepare this!)
+    const emptyFormTemplate = document.getElementById('empty-form-template').innerHTML;
+
+    // Replace __prefix__ with currentFormCount in the cloned HTML
+    const newFormHtml = emptyFormTemplate.replace(/__prefix__/g, currentFormCount);
+
+    // Insert new form HTML into container
+    const div = document.createElement('div');
+    div.classList.add('line-form');
+    div.innerHTML = newFormHtml;
+    container.appendChild(div);
+
+    // Increment TOTAL_FORMS count
+    totalForms.value = currentFormCount + 1;
+    });
+});
+</script>
+
+<!-- Hidden empty form template -->
+<div id="empty-form-template" style="display:none;">
+  {{ formset.empty_form|crispy }}
+</div>
+
+    <p>Back to <a href="{% url 'budget_list' %}">All budgets</a>.</p>
+
+{% endblock content %}
