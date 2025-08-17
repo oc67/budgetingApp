@@ -1,5 +1,7 @@
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
+
 
 # Create your models here.
 
@@ -14,11 +16,12 @@ class BudgetHeader(models.Model):
                 ("April","April"),("May","May"),("June","June"),
                 ("July","July"),("August","August"),("September","September"),
                 ("October","October"),("November","November"),("December","December")]
+    
     budget_month=models.CharField(choices=all_months,max_length=15,null=False,blank=False)
 
     budget_year=models.IntegerField(null=False,blank=False)
 
-    budget_created_at=models.DateField(null=True,blank=True)
+    budget_created_at=models.DateField(null=True,blank=True,default=timezone.now())
     monthly_budget_available=models.FloatField(null=False,blank=False)
 
     # Other possible fields: clientName,
@@ -41,11 +44,25 @@ class BudgetLines(models.Model):
         BudgetHeader, related_name="lines", on_delete=models.CASCADE
     )
 
-    item_name=models.CharField(max_length=20,null=False,blank=False)
+    item_name=models.CharField(max_length=50,null=False,blank=False)
     item_quantity=models.IntegerField(null=False,blank=False)
     item_price=models.FloatField(null=False,blank=False)
 
+    item_categories_list=[("Health","Health"),
+                          ("Debt payments","Debt payments"),
+                          ("Rent / mortgage","Rent / mortgage"),
+                          ("Energy","Energy"),
+                          ("Groceries","Groceries"),
+                          ("Transport","Transport"),
+                          ("Gym","Gym"),
+                          ("Eating out", "Eating out"),
+                          ("Entertainment","Entertainment"),
+                          ("Other","Other")]
+
+    item_category=models.CharField(max_length=20,choices=item_categories_list,null=False,blank=False)
+
     is_recurrent=models.BooleanField(default=True,null=True,blank=True)
+    item_notes=models.CharField(max_length=500, null=True,blank=True)
 
     class Meta:
         verbose_name_plural = "budget lines"

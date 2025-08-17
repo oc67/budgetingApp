@@ -32,13 +32,16 @@
             </div>
             
     {% endfor %}
+ 
     <button type="button" id="add-line">Add Line</button>
+
+ 
     <br><br>
     <button class="btn btn-success ml-2" type="submit">Update </button>
     
     <a href="{% url 'budget_delete' object.budget_ID %}">Delete</a>
-
-   </div>
+ </div>
+  
 </form>
 
 <!--Javascript code required to display multiple insight lines -->

@@ -1,5 +1,4 @@
-header h1 a {
-    color: red;
-    margin-left: 20px;
+body h1 {
+    color: red !important;
 
 }
