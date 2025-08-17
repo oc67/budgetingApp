@@ -56,7 +56,8 @@ JavaScript to display the "project created successfully" only for 5 seconds
         <div class="card-header">
             <span class="fw-bold">
 
-                    <a href="{{ budget.get_absolute_url }}">{{budget.budget_ID}}. {{budget.budget_month}}</a> 
+                    <a href="{{ budget.get_absolute_url }}">{{budget.budget_ID}}. {{budget.budget_month}}
+                        {{budget.budget_year}} </a> 
 
 
             </span> 
@@ -72,8 +73,7 @@ JavaScript to display the "project created successfully" only for 5 seconds
                     {{line.item_name }} <br> 
 
                 </span>
-                    Quantity: {{line.item_quantity }} | Price £{{line.item_price}}
-                    &middot;
+                    Quantity: {{line.item_quantity }} &middot; Price £{{line.item_price}}
             </p>
             {% endfor %}
         </div>
