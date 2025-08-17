@@ -2,16 +2,12 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-
-
-
-
 {% block content %}
 
 <!--Displays the detail of the clicked article -->
 <div class="budget-entry">
     
-    <h2>Create a Budget </h2>
+    <h2>Budget {{object.budget_ID}}: {{object.budget_month}} </h2>
 </div>
 
 <hr>
@@ -21,15 +17,14 @@
 
 
 <form action="" method="post">{% csrf_token %}
-    {{ form|crispy }}
-    {{ formset.management_form }}
-
+    {{ budgetHeaderForm|crispy }}
 
 
 <h4> Budget lines</h4>
   <div id="formset-container">
+    {{ budgetLinesForm.management_form }}
     <!--Displays insight lines of budget-->
-    {% for form in formset %}
+    {% for form in budgetLinesForm %}
       <div class="line-form">
             {{ form|crispy }}
             {{form.DELETE|crispy}}
@@ -41,6 +36,7 @@
     <br><br>
     <button class="btn btn-success ml-2" type="submit">Update </button>
     
+    <a href="{% url 'budget_delete' object.budget_ID %}">Delete</a>
 
    </div>
 </form>
