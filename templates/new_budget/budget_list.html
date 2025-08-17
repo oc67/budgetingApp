@@ -8,6 +8,7 @@
 
 
 <!--Displaying message when buget has been added successfully on new_budget page:-->
+<!--
   {% if messages %}
 
   <style>
@@ -29,7 +30,7 @@ right: 20px;                  /* Distance from right */
       {% endfor %}
   </div>
 
-<!--JavaScript to display the "project created successfully" only for 5 seconds-->
+JavaScript to display the "project created successfully" only for 5 seconds
 <script>
     // Hide messages after 5 seconds
     setTimeout(function() {
@@ -42,14 +43,14 @@ right: 20px;                  /* Distance from right */
     </script>
 
   {% endif %}
+-->
 
-
-<h2><b><u>Projects</u></b></h2>
+<h2><b><u>Budgets</u></b></h2>
 <br>
 
 <!--Displaying project list in a succint way:-->
-{% for project in object_list %}
-{% if budget.budget_owner.pk == request.user.CustomUser.pk %}
+{% for budget in object_list %}
+{% if budget.budget_owner.pk == request.user.pk %}
 
     <div class="card">
         <div class="card-header">
@@ -58,7 +59,7 @@ right: 20px;                  /* Distance from right */
                     <a href="{{ budget.get_absolute_url }}">{{budget.budget_ID}}. {{budget.budget_month}}</a> 
 
 
-            </span> &middot;
+            </span> 
             <span class="test-muted">  
             </span> 
         </div>  
@@ -68,8 +69,11 @@ right: 20px;                  /* Distance from right */
             {% for line in budget.lines.all %}
             <p>
                 <span class="fw-bold">
-                    {{line.item_name }} &middot;
+                    {{line.item_name }} <br> 
+
                 </span>
+                    Quantity: {{line.item_quantity }} | Price £{{line.item_price}}
+                    &middot;
             </p>
             {% endfor %}
         </div>

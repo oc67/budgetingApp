@@ -1,17 +1,73 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView, UpdateView, FormView
+from django.shortcuts import render, redirect
+from django.views.generic import (ListView, DetailView, 
+                                  UpdateView, DeleteView,
+                                    CreateView,View)
 from .models import BudgetHeader
 from .forms import budgetForm, budgetLineFormSet
+
+from django.contrib import messages
 
 
 # Create your views here.
 
-class budgetsListView(ListView):
 
-    template_name="budgetsListView.html"
+class budgetCreateView(LoginRequiredMixin, CreateView):
+    model = BudgetHeader
+    fields = (
+            "budget_owner",
+            "budget_month",
+            "monthly_budget_available",
+            "budget_created_at",
+
+    )
+
+    template_name ="new_budget/new_budget.html"
+
+    def get(self, request, *args, **kwargs):
+        print("getting in createView")
+        form = budgetForm()
+        formset = budgetLineFormSet()
+
+        return render(request, self.template_name, {"form": form, "formset": formset})
+
+    def post(self, request, *args, **kwargs):
+        print("posting in createView")
+
+        form = budgetForm(request.POST)
+        formset = budgetLineFormSet(request.POST)
+        if form.is_valid() and formset.is_valid():
+            budget = form.save()
+            formset.instance = budget
+            formset.save()
+            print("saved successfully-create view")
+            messages.success(request, "Budget has been created successfully")
+
+            return redirect(
+                "budget_list"
+)
+        else:
+            print()
+            print("problems!")
+            print("problem with header?", form.is_valid())
+            print("problem with lines?", formset.is_valid())
+
+        return render(request, self.template_name, {"form": form, "formset": formset})
+
+
+
+class budgetDeleteView(LoginRequiredMixin, DeleteView):
+    model = BudgetHeader
+    template_name = "new_budget/budget_delete.html"
+    success_url = reverse_lazy("budget_list")
+
+
+
+class budgetsListView(LoginRequiredMixin,ListView):
+
+    template_name="new_budget/budget_list.html"
     model=BudgetHeader
 
 
@@ -86,29 +142,6 @@ class budgetLinesPost(UpdateView):
 
         return super().post(request, *args, **kwargs)
 
-    """  def form_valid(self, request):
-
-        print("form_valid - budgetLinesPost")
-
-        form = budgetForm(request.POST)
-        formset = budgetLineFormSet(request.POST)                         
-
-        if form.is_valid() and formset.is_valid():
-
-            #Not comitting anything yet:
-            budgetHeaderInfo=form.save(commit=False)
-            print("budgetLinesPost - lines form saved")
-            print("budget header info var is",budgetHeaderInfo)
-            #Saving header info:
-            self.object.save()
-
-            formset.instance = budgetHeaderInfo  
-            print("formset:",formset)
-            print("instance ",formset.instance)
-            formset.save()
-            print("budgetLinesPost - lines form saved")
-
-            return super().form_valid() """
 
     def get_success_url(self):
         budget = self.object
@@ -131,3 +164,6 @@ class budgetDetailView(LoginRequiredMixin, View):
         print("posting-detail")
         view = budgetLinesPost.as_view()
         return view(request, *args, **kwargs)
+    
+
+

@@ -33,11 +33,11 @@ class budgetForm(forms.ModelForm):
 budgetLineFormSet = inlineformset_factory(
     BudgetHeader,
     BudgetLines,
-fields=(     "item_name",
+    fields=("item_name",
             "item_quantity",
             "item_price",
             "is_recurrent",
-)
+    ),
     labels={
             "item_name": "Item name: ",
             "item_quantity": "Item quantity: ",
