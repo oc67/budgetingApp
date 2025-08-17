@@ -7,10 +7,16 @@ class BudgetHeader(models.Model):
     
 
     budget_ID=models.AutoField(primary_key=True)
-    budget_owner=models.ForeignKey("accounts.CustomUser",null=True,blank=True,on_delete=models.CASCADE)
+    budget_owner=models.ForeignKey("accounts.CustomUser",null=True,blank=True,
+                                   on_delete=models.CASCADE)
 
-    all_months=[("January","January"),("February","February"),("March","March"),("April","April"),("May","May"),("June","June")]
+    all_months=[("January","January"),("February","February"),("March","March"),
+                ("April","April"),("May","May"),("June","June"),
+                ("July","July"),("August","August"),("September","September"),
+                ("October","October"),("November","November"),("December","December")]
     budget_month=models.CharField(choices=all_months,max_length=15,null=False,blank=False)
+
+    budget_year=models.IntegerField(null=False,blank=False)
 
     budget_created_at=models.DateField(null=True,blank=True)
     monthly_budget_available=models.FloatField(null=False,blank=False)
@@ -37,7 +43,7 @@ class BudgetLines(models.Model):
 
     item_name=models.CharField(max_length=20,null=False,blank=False)
     item_quantity=models.IntegerField(null=False,blank=False)
-    item_price=models.FloatField(null=True,blank=True)
+    item_price=models.FloatField(null=False,blank=False)
 
     is_recurrent=models.BooleanField(default=True,null=True,blank=True)
 

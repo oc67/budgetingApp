@@ -39,6 +39,10 @@ class budgetCreateView(LoginRequiredMixin, CreateView):
         form = budgetForm(request.POST)
         formset = budgetLineFormSet(request.POST)
         if form.is_valid() and formset.is_valid():
+            #links owner of budget to budget (info not collected on form):
+            budget=form.save(commit=False)
+            budget.budget_owner=request.user
+            
             budget = form.save()
             formset.instance = budget
             formset.save()

@@ -10,8 +10,8 @@ class budgetForm(forms.ModelForm):
         model = BudgetHeader
         fields = [
             #"budget_ID",
-            "budget_owner",
             "budget_month",
+            "budget_year",
             "monthly_budget_available",
             "budget_created_at",
 
@@ -22,6 +22,7 @@ class budgetForm(forms.ModelForm):
 
            # "projectID": "Project ID:",
             "budget_owner": "Budget owner: ",
+            "budget_year": "Budget year:",
             "budget_month": "Budget month: ",
             "monthly_budget_available":"Monthly budget available: ",
             "budget_created_at": "Budget creation date: ",
