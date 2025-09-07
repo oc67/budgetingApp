@@ -19,7 +19,13 @@
 <form action="" method="post">{% csrf_token %}
     {{ budgetHeaderForm|crispy }}
 
+Added expenses for the month: £{{total_expenses}}
 
+<br><br>
+Savings left: £{{budget_status}}
+
+<br>
+<br>
 <h4> Budget lines</h4>
   <div id="formset-container">
     {{ budgetLinesForm.management_form }}
