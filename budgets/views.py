@@ -5,9 +5,10 @@ from django.shortcuts import render, redirect
 from django.views.generic import (ListView, DetailView, 
                                   UpdateView, DeleteView,
                                     CreateView,View)
-from .models import BudgetHeader
+from .models import BudgetHeader, BudgetLines
 from .forms import budgetForm, budgetLineFormSet
 
+from django.db.models import Sum
 from django.contrib import messages
 
 
@@ -76,6 +77,8 @@ class budgetsListView(LoginRequiredMixin,ListView):
 
 
 
+
+
 ##Supporting class to get the details of an existing budget
 class budgetLinesGet(DetailView):
     print("SUPPORTING CLASS called - budgetLinesGet class called")
@@ -92,6 +95,11 @@ class budgetLinesGet(DetailView):
         context["budgetHeaderForm"] = budgetForm(instance=budget)
         context["budgetLinesForm"] = budgetLineFormSet(instance=budget)
         #budget.budgetOrganisation = self.request.user
+        expenses_across_lines=budget.lines.aggregate(total=Sum('item_price'))['total'] or 0
+        context["total_expenses"] = expenses_across_lines
+        expenses_variance=budget.monthly_budget_available-expenses_across_lines
+        context["budget_status"]=expenses_variance
+
 
         #context["worksInSameCompany"]=budget.budgetOrganisation.isEqualNode(budget.budgetOrganisation)
 
