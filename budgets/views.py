@@ -8,7 +8,7 @@ from django.views.generic import (ListView, DetailView,
 from .models import BudgetHeader, BudgetLines
 from .forms import budgetForm, budgetLineFormSet
 
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.contrib import messages
 
 
@@ -44,7 +44,7 @@ class budgetCreateView(LoginRequiredMixin, CreateView):
             budget=form.save(commit=False)
             budget.budget_owner=request.user
             
-            budget = form.save()
+            budget = budget.save()
             formset.instance = budget
             formset.save()
             print("saved successfully-create view")
@@ -71,10 +71,8 @@ class budgetDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class budgetsListView(LoginRequiredMixin,ListView):
-
-    template_name="new_budget/budget_list.html"
     model=BudgetHeader
-
+    template_name="new_budget/budget_list.html"
 
 
 
@@ -85,27 +83,21 @@ class budgetLinesGet(DetailView):
     model = BudgetHeader
     template_name = "new_budget/budget_detail.html"
 
-    def get_context_data(self, **kwargs):
+    def get(self, request, *args, **kwargs):
+        budget=self.get_object()
+        form = budgetForm(instance=budget)
+        formset = budgetLineFormSet(instance=budget)
 
-        budget = self.get_object()
+        parent_view = budgetDetailView()
+        parent_view.request = request
+        parent_view.kwargs = kwargs
+        context = parent_view.get_context_data(form=form, formset=formset)
 
-        print("retrieving budget", budget)
+        return render(request,
+                       self.template_name, 
+                      context)
 
-        context = super().get_context_data(**kwargs)
-        context["budgetHeaderForm"] = budgetForm(instance=budget)
-        context["budgetLinesForm"] = budgetLineFormSet(instance=budget)
-        #budget.budgetOrganisation = self.request.user
-        expenses_across_lines=budget.lines.aggregate(total=Sum('item_price'))['total'] or 0
-        context["total_expenses"] = expenses_across_lines
-        expenses_variance=budget.monthly_budget_available-expenses_across_lines
-        context["budget_status"]=expenses_variance
-
-
-        #context["worksInSameCompany"]=budget.budgetOrganisation.isEqualNode(budget.budgetOrganisation)
-
-        print("Context is ", context)
-
-        return context
+    
 
 
 ##Supporting class to update the details of an existing budget
@@ -122,8 +114,7 @@ class budgetLinesPost(UpdateView):
         budget = self.get_object()
 
         form = budgetForm(
-            request.POST, instance=budget
-        )  # needs to be set to budget, else recreated
+            request.POST, instance=budget) 
         formset = budgetLineFormSet(request.POST, instance=budget, prefix="lines")
         print("form in posting is", form)
         print("formset in posting is", formset)
@@ -142,6 +133,8 @@ class budgetLinesPost(UpdateView):
             print("instance ", formset.instance)
             formset.save()
             print("budgetLinesPost - lines form saved")
+            return redirect("budget_detail", pk=budget.pk)
+
 
         else:
 
@@ -152,7 +145,13 @@ class budgetLinesPost(UpdateView):
             print("form: ", form.is_valid())
             print("formset: ", formset.is_valid())
 
-        return super().post(request, *args, **kwargs)
+            #parent view (budgetDetailView is used for providing error details:)
+            parent_view = budgetDetailView()
+            parent_view.request = request
+            parent_view.kwargs = kwargs
+            context = parent_view.get_context_data(form=form, formset=formset)
+            return render(request, self.template_name, context)
+
 
 
     def get_success_url(self):
@@ -166,6 +165,48 @@ class budgetLinesPost(UpdateView):
 class budgetDetailView(LoginRequiredMixin, View):
     print("CLASS 2 called - detail view called")
     context_object_name = "budget"
+
+
+    def get_context_data(self, **kwargs):
+
+        budget = self.get_object()
+    
+        print("retrieving budget", budget)
+
+        context = {}
+        context["budgetHeaderForm"] = kwargs.get("form", budgetForm(instance=budget))
+        context["budgetLinesForm"] = kwargs.get("formset", budgetLineFormSet(instance=budget, prefix="lines"))
+
+
+        #budget.budgetOrganisation = self.request.user
+
+        #Variable that adds up of all the units of each item:
+        total_price_per_line = [
+        line.item_price * line.item_quantity for line in budget.lines.all()    ]
+        context["total_price_per_line"]=total_price_per_line
+        context["form_totals"] = list(zip(budgetLineFormSet(instance=budget).forms, total_price_per_line))
+
+
+        #Variable that computes the sum of all lines of the budget:
+        expenses_across_lines=budget.lines.aggregate(total=Sum("item_price"))["total"] or 0
+        context["total_expenses"] = expenses_across_lines
+        #Variable that displays the variation of budget against spend:
+        expenses_variance=budget.monthly_budget_available-expenses_across_lines
+
+        if expenses_variance>0:
+            context["monthly_performance"]="Well done, your profit for the month is %.2f" %expenses_variance
+        elif expenses_variance==0:
+            context["monthly_performance"]="Your expenses exactly match your budget this month"
+        else:
+            context["monthly_performance"]="It seems you went out of budget. Your loss for the month is " %(-expenses_variance)
+
+
+        #context["worksInSameCompany"]=budget.budgetOrganisation.isEqualNode(budget.budgetOrganisation)
+
+        print("Context is ", context)
+
+        return context
+    
 
     def get(self, request, *args, **kwargs):
         print("getting-detail")
