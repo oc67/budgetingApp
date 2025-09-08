@@ -22,20 +22,22 @@
 Added expenses for the month: £{{total_expenses}}
 
 <br><br>
-Savings left: £{{budget_status}}
+{{monthly_performance}}
+<br><br>
 
-<br>
-<br>
 <h4> Budget lines</h4>
   <div id="formset-container">
     {{ budgetLinesForm.management_form }}
     <!--Displays insight lines of budget-->
-    {% for form in budgetLinesForm %}
+    {% for form,total in form_totals %}
       <div class="line-form">
+            {{ form.id }}
             {{ form|crispy }}
             {{form.DELETE|crispy}}
 
             </div>
+    Total price of line: £{{total}} 
+    <br>
             
     {% endfor %}
  
