@@ -7,7 +7,7 @@
 <!--Displays the detail of the clicked article -->
 <div class="budget-entry">
     
-    <h2>Budget {{object.budget_ID}}: {{object.budget_month}} </h2>
+    <h2>Budget {{budget.budget_ID}}: {{budget.budget_month}} </h2>
 </div>
 
 <hr>
@@ -29,14 +29,14 @@ Added expenses for the month: £{{total_expenses}}
   <div id="formset-container">
     {{ budgetLinesForm.management_form }}
     <!--Displays insight lines of budget-->
-    {% for form,total in form_totals %}
+    {% for form,price in form_totals %}
       <div class="line-form">
             {{ form.id }}
             {{ form|crispy }}
             {{form.DELETE|crispy}}
 
             </div>
-    Total price of line: £{{total}} 
+    Total price of line: £  {{price}}
     <br>
             
     {% endfor %}
@@ -47,7 +47,7 @@ Added expenses for the month: £{{total_expenses}}
     <br><br>
     <button class="btn btn-success ml-2" type="submit">Update </button>
     
-    <a href="{% url 'budget_delete' object.budget_ID %}">Delete</a>
+    <a href="{% url 'budget_delete' budget.budget_ID %}">Delete</a>
  </div>
   
 </form>

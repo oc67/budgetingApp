@@ -4,12 +4,16 @@ from django.urls import reverse_lazy, reverse
 from django.shortcuts import render, redirect
 from django.views.generic import (ListView, DetailView, 
                                   UpdateView, DeleteView,
-                                    CreateView,View)
+                                    CreateView,FormView,
+                                    View)
+
+from django.views.generic.detail import SingleObjectMixin
 from .models import BudgetHeader, BudgetLines
 from .forms import budgetForm, budgetLineFormSet
 
 from django.db.models import Sum, F
 from django.contrib import messages
+from django.http import HttpResponseRedirect
 
 
 # Create your views here.
@@ -22,11 +26,11 @@ class budgetCreateView(LoginRequiredMixin, CreateView):
             "budget_month",
             "monthly_budget_available",
             "budget_created_at",
-
     )
 
     template_name ="new_budget/new_budget.html"
 
+    #Loads blank form and formset:
     def get(self, request, *args, **kwargs):
         print("getting in createView")
         form = budgetForm()
@@ -34,11 +38,14 @@ class budgetCreateView(LoginRequiredMixin, CreateView):
 
         return render(request, self.template_name, {"form": form, "formset": formset})
 
+    
     def post(self, request, *args, **kwargs):
         print("posting in createView")
 
         form = budgetForm(request.POST)
         formset = budgetLineFormSet(request.POST)
+
+        #form_valid method needs to be replicated since such method does not check formset validity
         if form.is_valid() and formset.is_valid():
             #links owner of budget to budget (info not collected on form):
             budget=form.save(commit=False)
@@ -51,15 +58,14 @@ class budgetCreateView(LoginRequiredMixin, CreateView):
             messages.success(request, "Budget has been created successfully")
 
             return redirect(
-                "budget_list"
-)
-        else:
-            print()
-            print("problems!")
-            print("problem with header?", form.is_valid())
-            print("problem with lines?", formset.is_valid())
+                "budget_list")
+    
+        #for debugging purposes:
+        print("Invalid form/formset. Debugging: ")
+        print("problem with header?", form.is_valid())
+        print("problem with lines?", formset.is_valid())
 
-        return render(request, self.template_name, {"form": form, "formset": formset})
+        #NEEDS RETURN RENDER !!!
 
 
 
@@ -76,115 +82,37 @@ class budgetsListView(LoginRequiredMixin,ListView):
 
 
 
-
-##Supporting class to get the details of an existing budget
 class budgetLinesGet(DetailView):
-    print("SUPPORTING CLASS called - budgetLinesGet class called")
-    model = BudgetHeader
+
+    model=BudgetHeader
     template_name = "new_budget/budget_detail.html"
-
-    def get(self, request, *args, **kwargs):
-        budget=self.get_object()
-        form = budgetForm(instance=budget)
-        formset = budgetLineFormSet(instance=budget)
-
-        parent_view = budgetDetailView()
-        parent_view.request = request
-        parent_view.kwargs = kwargs
-        context = parent_view.get_context_data(form=form, formset=formset)
-
-        return render(request,
-                       self.template_name, 
-                      context)
-
-    
-
-
-##Supporting class to update the details of an existing budget
-
-
-class budgetLinesPost(UpdateView):
-    print("SUPPORTING CLASS called - budget lines post method called")
-    model = BudgetHeader
-    form_class = budgetForm
-    template_name = "new_budget/budget_detail.html"
-
-    def post(self, request, *args, **kwargs):
-        print("posting - budgetLinesPost")
-        budget = self.get_object()
-
-        form = budgetForm(
-            request.POST, instance=budget) 
-        formset = budgetLineFormSet(request.POST, instance=budget, prefix="lines")
-        print("form in posting is", form)
-        print("formset in posting is", formset)
-
-        if form.is_valid() and formset.is_valid():
-
-            # Not comitting anything yet:
-            budgetHeaderInfo = form.save(commit=False)
-            print("budgetLinesPost - lines form saved")
-            print("budget header info var is", budgetHeaderInfo)
-            # Saving header info:
-            budgetHeaderInfo.save()
-
-            formset.instance = budgetHeaderInfo
-            print("formset:", formset)
-            print("instance ", formset.instance)
-            formset.save()
-            print("budgetLinesPost - lines form saved")
-            return redirect("budget_detail", pk=budget.pk)
-
-
-        else:
-
-            print("ERRORS", form.errors)
-            for subform in formset:
-                print(subform.errors)
-            print("Problems in updating:")
-            print("form: ", form.is_valid())
-            print("formset: ", formset.is_valid())
-
-            #parent view (budgetDetailView is used for providing error details:)
-            parent_view = budgetDetailView()
-            parent_view.request = request
-            parent_view.kwargs = kwargs
-            context = parent_view.get_context_data(form=form, formset=formset)
-            return render(request, self.template_name, context)
-
-
-
-    def get_success_url(self):
-        budget = self.object
-        return reverse("budget_detail", kwargs={"pk": budget.pk})
-
-
-# 2) Class to open the fields of an existing budget and update them if needed
-
-
-class budgetDetailView(LoginRequiredMixin, View):
-    print("CLASS 2 called - detail view called")
     context_object_name = "budget"
 
 
     def get_context_data(self, **kwargs):
 
+        #Getting info from base class:
+        context = super().get_context_data(**kwargs) 
+
         budget = self.get_object()
-    
-        print("retrieving budget", budget)
-
-        context = {}
         context["budgetHeaderForm"] = kwargs.get("form", budgetForm(instance=budget))
-        context["budgetLinesForm"] = kwargs.get("formset", budgetLineFormSet(instance=budget, prefix="lines"))
-
-
+        context["budgetLinesForm"] = kwargs.get(
+            "formset", budgetLineFormSet(instance=budget, prefix="lines")
+        )
         #budget.budgetOrganisation = self.request.user
 
         #Variable that adds up of all the units of each item:
         total_price_per_line = [
         line.item_price * line.item_quantity for line in budget.lines.all()    ]
         context["total_price_per_line"]=total_price_per_line
-        context["form_totals"] = list(zip(budgetLineFormSet(instance=budget).forms, total_price_per_line))
+
+        formset = kwargs.get("formset", budgetLineFormSet(instance=budget, prefix="lines"))
+        context["formset"] = formset
+
+        #0 required in list comprehension below to deal with case where price or quantity is None:
+        form_totals = [(form, (form.instance.item_price or 0) * (form.instance.item_quantity
+                                                                  or 0)) for form in formset]
+        context["form_totals"] = form_totals
 
 
         #Variable that computes the sum of all lines of the budget:
@@ -200,23 +128,101 @@ class budgetDetailView(LoginRequiredMixin, View):
         else:
             context["monthly_performance"]="It seems you went out of budget. Your loss for the month is " %(-expenses_variance)
 
-
         #context["worksInSameCompany"]=budget.budgetOrganisation.isEqualNode(budget.budgetOrganisation)
 
         print("Context is ", context)
-
         return context
-    
 
-    def get(self, request, *args, **kwargs):
-        print("getting-detail")
-        view = budgetLinesGet.as_view()
-        return view(request, *args, **kwargs)
+
+
+class budgetLinesPost(SingleObjectMixin, FormView):
+    print("SUPPORTING CLASS called - budget lines post method called")
+    model = BudgetHeader
+    form_class = budgetForm
+    template_name = "new_budget/budget_detail.html"
+    context_object_name = "budget"
+
 
     def post(self, request, *args, **kwargs):
-        print("posting-detail")
-        view = budgetLinesPost.as_view()
+        print("posting - budgetLinesPost")
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        budget=self.get_object()
+        #form = budgetForm(
+        #    self.request.POST, instance=budget) 
+        formset = budgetLineFormSet(self.request.POST, instance=budget, prefix="lines")
+        print("form in posting is", form)
+        print("formset in posting is", formset)
+
+        #checking whether formset is valid on top of form, which will always be valid because of method
+        if formset.is_valid():
+            # Not comitting anything yet:
+            budgetHeaderInfo = form.save(commit=False)
+            print("budget header info var is", budgetHeaderInfo)
+            # Saving header info:
+            budgetHeaderInfo.save()
+
+            formset.instance = budgetHeaderInfo
+            print("formset:", formset)
+            print("instance ", formset.instance)
+            formset.save()
+            print("budgetLinesPost - lines form saved")
+
+            return super().form_valid(form)
+        
+        #if errors exist, these are due to formset problems
+        print("ERRORS", form.errors)
+        for subform in formset:
+            print(subform.errors)
+        print("Non-form errors (general formset errors):", formset.non_form_errors())
+        print("POST data received:")
+        for key, value in self.request.POST.items():
+            print(f"{key}: {value}")
+        print("Problems in updating:")
+        print("form is fine: ", form.is_valid())
+        print("formset is fine: ", formset.is_valid())
+
+        #
+        form_totals = []
+        for form_item in formset:
+            if form_item.is_valid():
+                quantity = form_item.cleaned_data.get('item_quantity', 0)
+                price = form_item.cleaned_data.get('item_price', 0)
+            else:
+                quantity = form_item.initial.get('item_quantity', 0)
+                price = form_item.initial.get('item_price', 0)
+            form_totals.append((form_item, quantity * price))
+        
+        return self.render_to_response(
+        self.get_context_data(form=form, formset=formset))
+
+    def get_success_url(self):
+        budget = self.object
+        return reverse("budget_detail", kwargs={"pk": budget.pk})
+
+
+
+class budgetDetailView(LoginRequiredMixin, View):
+    model = BudgetHeader
+    print("CLASS 2 called - detail view called")
+    template_name = "new_budget/budget_detail.html"
+    form_class=budgetForm
+
+
+    def get(self, request, *args, **kwargs):
+        
+        view=budgetLinesGet.as_view()
         return view(request, *args, **kwargs)
+
+
+    def post(self, request, *args, **kwargs):
+
+        view=budgetLinesPost.as_view()
+        return view(request, *args, **kwargs)
+
+
     
 
 
