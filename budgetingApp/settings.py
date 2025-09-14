@@ -43,6 +43,10 @@ INSTALLED_APPS = [
     "pages",
     "accounts",
     "budgets",
+    #Api:
+    "rest_framework",
+    "apis",#"apis.apps.ApisConfig",
+    #"budgets.apps.BudgetsConfig",
 ]
 
 MIDDLEWARE = [
