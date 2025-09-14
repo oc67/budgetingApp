@@ -8,7 +8,7 @@
 
 
 <!--Displaying message when buget has been added successfully on new_budget page:-->
-<!--
+
   {% if messages %}
 
   <style>
@@ -30,7 +30,7 @@ right: 20px;                  /* Distance from right */
       {% endfor %}
   </div>
 
-JavaScript to display the "project created successfully" only for 5 seconds
+JavaScript to display "Budget created successfully" message only for 5 seconds
 <script>
     // Hide messages after 5 seconds
     setTimeout(function() {
@@ -43,9 +43,9 @@ JavaScript to display the "project created successfully" only for 5 seconds
     </script>
 
   {% endif %}
--->
 
-<h2><b><u>Budgets</u></b></h2>
+
+<h2><b><u>Budget list</u></b></h2>
 <br>
 
 <!--Displaying project list in a succint way:-->
@@ -56,8 +56,7 @@ JavaScript to display the "project created successfully" only for 5 seconds
         <div class="card-header">
             <span class="fw-bold">
 
-                    <a href="{{ budget.get_absolute_url }}">{{budget.budget_ID}}. {{budget.budget_month}}
-                        {{budget.budget_year}} </a> 
+                    <a href="{{ budget.get_absolute_url }}">{{budget.budget_month}} {{budget.budget_year}} </a> 
 
 
             </span> 

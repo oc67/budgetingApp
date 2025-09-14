@@ -9,7 +9,7 @@ class BudgetHeader(models.Model):
     
 
     budget_ID=models.AutoField(primary_key=True)
-    budget_owner=models.ForeignKey("accounts.CustomUser",null=True,blank=True,
+    budget_owner=models.ForeignKey("accounts.CustomUser",null=False,blank=False,
                                    on_delete=models.CASCADE)
 
     all_months=[("January","January"),("February","February"),("March","March"),
@@ -17,9 +17,9 @@ class BudgetHeader(models.Model):
                 ("July","July"),("August","August"),("September","September"),
                 ("October","October"),("November","November"),("December","December")]
     
-    budget_month=models.CharField(choices=all_months,max_length=15,null=False,blank=False)
+    budget_month=models.CharField(choices=all_months,max_length=15,null=False,blank=False,default="April")
 
-    budget_year=models.IntegerField(null=False,blank=False)
+    budget_year=models.IntegerField(null=False,blank=False,default=2025)
 
     budget_created_at=models.DateField(null=True,blank=True,default=timezone.now())
     monthly_budget_available=models.FloatField(null=False,blank=False)
@@ -29,9 +29,10 @@ class BudgetHeader(models.Model):
     # Required to display correct plural in Admin view on Django:
     class Meta:
         verbose_name_plural = "budget headers"
+        unique_together=["budget_month","budget_year"]
 
     def __str__(self):
-        return str(self.budget_ID)
+        return str(self.budget_month)+str(self.budget_year)
 
     def get_absolute_url(self):
         return reverse("budget_detail", kwargs={"pk": self.pk})

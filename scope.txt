@@ -1,0 +1,10 @@
+done:
+ to add order to budgets (by date) on list view 
+finalise graphs on review performance (pie chart by category and compare actual vs planned
+
+left:
+add auth and author to api
+
+finalise graphs on review performance ( compare actual vs planned
+google sign-ips: 
+tests

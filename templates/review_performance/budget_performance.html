@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Budget Performance{% endblock title %}
+
+{% block content %}
+
+<h2><b><u>Review Performance</u></b></h2>
+<br>
+<h4><b>Accumulated expenses per category</b></h4>
+<br>
+
+<!-- Chart container -->
+<div id="chartContainer" style="width: 100%; height: 360px;"></div>
+
+<!-- Load CanvasJS from CDN -->
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+<script>
+    // Pass Django context to JavaScript safely
+    var datapoints = {{ datapoints|safe }};
+
+    window.onload = function () {
+        var chart = new CanvasJS.Chart("chartContainer", {
+            animationEnabled: true,
+            exportEnabled: true,
+            title: {
+                text: "Expenses per category",
+                fontFamily: "Arial"
+            },
+            axisY: {
+                title: "Expenses (in £)"
+            },
+            data: [{
+                type: "column",
+                //yValueFormatString: "#,##0.## tonnes"
+                dataPoints: datapoints
+            }]
+        });
+        chart.render();
+    };
+</script>
+
+{% endblock content %}

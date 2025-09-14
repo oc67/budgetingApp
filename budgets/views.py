@@ -43,7 +43,7 @@ class budgetCreateView(LoginRequiredMixin, CreateView):
         print("posting in createView")
 
         form = budgetForm(request.POST)
-        formset = budgetLineFormSet(request.POST)
+        formset = budgetLineFormSet(request.POST,prefix="lines")
 
         #form_valid method needs to be replicated since such method does not check formset validity
         if form.is_valid() and formset.is_valid():
@@ -51,7 +51,7 @@ class budgetCreateView(LoginRequiredMixin, CreateView):
             budget=form.save(commit=False)
             budget.budget_owner=request.user
             
-            budget = budget.save()
+            budget.save()
             formset.instance = budget
             formset.save()
             print("saved successfully-create view")
@@ -80,6 +80,10 @@ class budgetsListView(LoginRequiredMixin,ListView):
     model=BudgetHeader
     template_name="new_budget/budget_list.html"
 
+    def get_queryset(self):
+        queryset=BudgetHeader.objects.order_by("-budget_year","-budget_month")
+        print("check sorted ",queryset)
+        return BudgetHeader.objects.order_by("-budget_year","-budget_month")
 
 
 class budgetLinesGet(DetailView):
@@ -122,11 +126,11 @@ class budgetLinesGet(DetailView):
         expenses_variance=budget.monthly_budget_available-expenses_across_lines
 
         if expenses_variance>0:
-            context["monthly_performance"]="Well done, your profit for the month is %.2f" %expenses_variance
+            context["monthly_performance"]="Well done, your profit for the month is £%.2f" %expenses_variance
         elif expenses_variance==0:
             context["monthly_performance"]="Your expenses exactly match your budget this month"
         else:
-            context["monthly_performance"]="It seems you went out of budget. Your loss for the month is " %(-expenses_variance)
+            context["monthly_performance"]="It seems you went out of budget. Your loss for the month is %.2f"%(-expenses_variance)
 
         #context["worksInSameCompany"]=budget.budgetOrganisation.isEqualNode(budget.budgetOrganisation)
 
@@ -168,6 +172,8 @@ class budgetLinesPost(SingleObjectMixin, FormView):
             print("formset:", formset)
             print("instance ", formset.instance)
             formset.save()
+            #messages.success(request, "Budget has been updated successfully")
+
             print("budgetLinesPost - lines form saved")
 
             return super().form_valid(form)

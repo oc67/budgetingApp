@@ -19,6 +19,8 @@ class budgetAdmin(admin.ModelAdmin):
     list_display = [
         "budget_ID",
         "budget_owner",
+        "budget_month",
+        "budget_year",
 
     ]
 
