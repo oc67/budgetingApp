@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "accounts",
     "budgets",
     #Api:
+    "django_nvd3",
     "rest_framework",
     "apis",#"apis.apps.ApisConfig",
     #"budgets.apps.BudgetsConfig",
