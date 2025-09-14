@@ -7,7 +7,7 @@
 
 
 
-<!--Displaying message when buget has been added successfully on new_budget page:-->
+<!--Displaying message when budget has been added successfully on new_budget page:-->
 
   {% if messages %}
 
@@ -30,15 +30,14 @@ right: 20px;                  /* Distance from right */
       {% endfor %}
   </div>
 
-JavaScript to display "Budget created successfully" message only for 5 seconds
 <script>
-    // Hide messages after 5 seconds
+    // It displays "Budget created successfully" message only for 5 seconds
     setTimeout(function() {
         const messages = document.querySelector(".messages");
         if (messages) {
             messages.style.display = "none";
         }
-    }, 5000); // in miliseconds (5 s)
+    }, 5000); // in miliseconds 
 
     </script>
 
