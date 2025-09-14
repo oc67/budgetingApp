@@ -12,14 +12,14 @@ class BudgetHeader(models.Model):
     budget_owner=models.ForeignKey("accounts.CustomUser",null=False,blank=False,
                                    on_delete=models.CASCADE)
 
-    all_months=[("January","January"),("February","February"),("March","March"),
-                ("April","April"),("May","May"),("June","June"),
-                ("July","July"),("August","August"),("September","September"),
-                ("October","October"),("November","November"),("December","December")]
+    all_months=         [  ("January","January"),("February","February"),("March","March"),
+        ("April","April"),("May","May"),("June","June"),
+        ("July","July"),("August","August"),("September","September"),
+        ("October","October"),("November","November"),("December","December")]
     
-    budget_month=models.CharField(choices=all_months,max_length=15,null=False,blank=False,default="April")
-
-    budget_year=models.IntegerField(null=False,blank=False,default=2025)
+    budget_month=models.CharField(choices=all_months,max_length=15,null=False,blank=False,
+)
+    budget_year=models.IntegerField(null=False,blank=False)
 
     budget_created_at=models.DateField(null=True,blank=True,default=timezone.now())
     monthly_budget_available=models.FloatField(null=False,blank=False)
