@@ -7,6 +7,10 @@ from .serializers import BudgetSerializer
 
 #In APIs, views return JSON not contents of page:
 
-class BudgetAPIView(generics.ListAPIView):
+class BudgetAPIList(generics.ListAPIView):
+    queryset=BudgetHeader.objects.all()
+    serializer_class=BudgetSerializer
+
+class BudgetAPIDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset=BudgetHeader.objects.all()
     serializer_class=BudgetSerializer

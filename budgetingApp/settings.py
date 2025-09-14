@@ -37,22 +37,29 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "crispy_forms",
-    "crispy_bootstrap5",
+
     #New apps:
     "pages",
     "accounts",
     "budgets",
+    "apis",#"apis.apps.ApisConfig",
+
     #Api:
+    "crispy_forms",
+    "crispy_bootstrap5",
     "django_nvd3",
     "rest_framework",
-    "apis",#"apis.apps.ApisConfig",
+    "rest_framework.authtoken",
+
+    "corsheaders", # security reasons
+
     #"budgets.apps.BudgetsConfig",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -60,6 +67,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+CORS_ORIGIN_WHITELIST=[
+    "https://localhost:3000",
+    "https://localhost:8000",
+]
 ROOT_URLCONF = "budgetingApp.urls"
 
 TEMPLATES = [
@@ -146,4 +157,10 @@ CRISPY_TEMPLATE_PACK="bootstrap5"
 LOGIN_REDIRECT_URL="home"
 LOGOUT_REDIRECT_URL="home"
 
-
+#API
+REST_FRAMEWORK={"DEFAULT_PERMISSION_CLASSES":
+                ["rest_framework.permissions.IsAuthenticated"],
+                "DEFAULT_AUTHENTICATION_CLASSES":[
+                    "rest_framework.authentication.SessionAuthentication",
+                    "rest_framework.authentication.TokenAuthentication",
+                ]}
