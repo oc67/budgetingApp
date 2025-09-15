@@ -39,26 +39,27 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
 
-    #New apps:
-    "pages",
-    "accounts",
-    "budgets",
-    "apis",#"apis.apps.ApisConfig",
 
     #Api:
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
     "crispy_forms",
     "crispy_bootstrap5",
     "django_nvd3",
     "rest_framework",
     "rest_framework.authtoken",
     "dj_rest_auth",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
     "dj_rest_auth.registration",
     "corsheaders", # security reasons
 
     #"budgets.apps.BudgetsConfig",
+
+    #New apps:
+    "pages",
+    "accounts",
+    "budgets",
+    "apis",#"apis.apps.ApisConfig",
 ]
 
 MIDDLEWARE = [
@@ -68,7 +69,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
+    #"allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -77,6 +78,7 @@ CORS_ORIGIN_WHITELIST=[
     "https://localhost:3000",
     "https://localhost:8000",
 ]
+
 ROOT_URLCONF = "budgetingApp.urls"
 
 TEMPLATES = [
@@ -99,9 +101,9 @@ TEMPLATES = [
 
 EMAIL_BACKEND="django.core.mail.backends.console.EmailBackend"
 
-SITE_ID=1
+SITE_ID= 1
 
-WSGI_APPLICATION = "budgetingApp.wsgi.application"
+#WSGI_APPLICATION = "budgetingApp.wsgi.application"
 
 
 # Database
