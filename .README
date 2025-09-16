@@ -1,11 +1,46 @@
-App that:
-
-- enables users to create an account and log in to do transactions (authentication)
-
-- menu displays list of 10 last transactions 
-
-- lets users create a set of custom expenses name which can be linked with each expense
-
-- lets users visualise a graph that compares predicted expenses vs actual expenses in a month
+Budgeting app
+______________
 
 
+Author: Oriol Corvo
+
+Scope of the project:
+
+This Django project features a personal budgeting app which I have built to strengthen my skills in APIs and Django. For personal learning only, it is not related to any employer or commercial business. 
+
+
+Purpose of the project: 
+
+This app is a personal budgeting tool built to improve my software development skills, particularly around APIs and Django. 
+
+
+Features:
+
+-Budgeting app with CRUD functionalities (create, read, update and delete monthly budgets generated with crispy forms).
+-Authentication: users can sign up and log in.
+-Expense lines mainly feature item name, category, quantity, and price
+-REST Framework API that reveals budget header information.
+-API features authentication (sign-up and login) and authorisation aspects (only budget owners can access their budget information).
+
+
+Tech stack:
+
+-Front end: HTML, CSS, and Javascript (for success messages).
+-Framework: Django and Rest Framework.
+-Database used: SQLite.
+
+
+Roadmap:
+
+-Increased scope of the information revealed via the API.
+
+-The budget header and budget lines models will be expanded to include income lines.
+
+-New and existing plots will be created. 
+
+-Option to select time domain of budget plots.
+
+
+Maintenance and contributions: 
+
+Managed both by myself.
