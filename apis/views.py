@@ -21,6 +21,7 @@ class BudgetAPIList(generics.ListAPIView):
     def get_queryset(self):
         return BudgetHeader.objects.filter(budget_owner=self.request.user)
 
+#Enables budget owner to view, update and delete the APi information
 class BudgetAPIDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset=BudgetHeader.objects.all()
     serializer_class=BudgetHeaderSerializer
