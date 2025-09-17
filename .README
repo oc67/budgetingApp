@@ -19,7 +19,7 @@ Features:
 -Budgeting app with CRUD functionalities (create, read, update and delete monthly budgets generated with crispy forms).
 -Authentication: users can sign up and log in.
 -Expense lines mainly feature item name, category, quantity, and price
--REST Framework API that reveals budget header information.
+-REST Framework API that reveals budget header and lines information.
 -API features authentication (sign-up and login) and authorisation aspects (only budget owners can access their budget information).
 
 
@@ -31,8 +31,6 @@ Tech stack:
 
 
 Roadmap:
-
--Increased scope of the information revealed via the API.
 
 -The budget header and budget lines models will be expanded to include income lines.
 

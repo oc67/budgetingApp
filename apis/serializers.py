@@ -16,7 +16,7 @@ class BudgetLinesSerializer(serializers.ModelSerializer):
 class BudgetHeaderSerializer(serializers.ModelSerializer):
     
     
-    lines=BudgetLinesSerializer(many=True)
+    lines=BudgetLinesSerializer(many=True,required=False)#required enables one to keep lines unchanged
 
     class Meta:
         model=BudgetHeader
