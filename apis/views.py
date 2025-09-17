@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics
 
 from budgets.models import BudgetHeader, BudgetLines
-from .serializers import BudgetSerializer
+from .serializers import BudgetHeaderSerializer,BudgetLinesSerializer
 
 from django.contrib.auth import get_user_model
 from rest_framework import permissions
@@ -10,11 +10,11 @@ from rest_framework import permissions
 
 # Create your views here.
 
-#In APIs, views return JSON not contents of page:
+#In APIs, views return JSON, not the contents of page:
 
 class BudgetAPIList(generics.ListAPIView):
     queryset=BudgetHeader.objects.all()
-    serializer_class=BudgetSerializer
+    serializer_class=BudgetHeaderSerializer
     permission_classes=[permissions.IsAuthenticated]
     
     #Required to display API only to budget owners
@@ -23,7 +23,7 @@ class BudgetAPIList(generics.ListAPIView):
 
 class BudgetAPIDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset=BudgetHeader.objects.all()
-    serializer_class=BudgetSerializer
+    serializer_class=BudgetHeaderSerializer
     permission_classes=[permissions.IsAuthenticated]
     
     #Required to display API only to budget owners
