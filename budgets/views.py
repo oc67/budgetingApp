@@ -11,13 +11,13 @@ from django.views.generic.detail import SingleObjectMixin
 from .models import BudgetHeader, BudgetLines
 from .forms import budgetForm, budgetLineFormSet
 
-from django.db.models import Sum, F
+from django.db.models import Sum
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
+import csv
 
 
 # Create your views here.
-
 
 class budgetCreateView(LoginRequiredMixin, CreateView):
     model = BudgetHeader
@@ -86,6 +86,10 @@ class budgetsListView(LoginRequiredMixin,ListView):
         return BudgetHeader.objects.order_by("-budget_year","-budget_month")
 
 
+
+#Class that loads all the information for an existing budget, enabling such info to be used on
+# "budget_detail" template
+
 class budgetLinesGet(DetailView):
 
     model=BudgetHeader
@@ -139,6 +143,8 @@ class budgetLinesGet(DetailView):
 
 
 
+
+#Class that applies input validation on budget entry that is updated. If forms and formsets checks are passed, updated budget.
 class budgetLinesPost(SingleObjectMixin, FormView):
     print("SUPPORTING CLASS called - budget lines post method called")
     model = BudgetHeader
@@ -160,7 +166,7 @@ class budgetLinesPost(SingleObjectMixin, FormView):
         print("form in posting is", form)
         print("formset in posting is", formset)
 
-        #checking whether formset is valid on top of form, which will always be valid because of method
+        #checking whether formset is valid on top of form, which will always be valid because of method used
         if formset.is_valid():
             # Not comitting anything yet:
             budgetHeaderInfo = form.save(commit=False)
@@ -209,7 +215,7 @@ class budgetLinesPost(SingleObjectMixin, FormView):
         return reverse("budget_detail", kwargs={"pk": budget.pk})
 
 
-
+#Class that invokes the get and post classes when needed:
 class budgetDetailView(LoginRequiredMixin, View):
     model = BudgetHeader
     print("CLASS 2 called - detail view called")
@@ -229,6 +235,57 @@ class budgetDetailView(LoginRequiredMixin, View):
         return view(request, *args, **kwargs)
 
 
+    #Class that enables users to export budget info to csv format:
     
+class budgetExportToCSVView(LoginRequiredMixin, View):
+
+    def get(self,request, pk):
+
+        #Getting info from budget that is passed on:
+        budgetHeaderInfo = BudgetHeader.objects.get(budget_ID=pk) 
+
+        print("BudgetHeaderInfo is", budgetHeaderInfo)
+
+        budgetLinesInfo=list(BudgetLines.objects.filter(budgetHeader__budget_ID=pk).values())
 
 
+        print("BudgetLinesInfo is", budgetLinesInfo)
+
+        for line in budgetLinesInfo:
+            print("line is ",line, "and tpye is ",type(line))
+
+        # Create the HttpResponse object with the appropriate CSV header.
+        response = HttpResponse(
+            content_type="text/csv",
+            headers={"Content-Disposition": 'attachment; filename="sample_budget_export_%s_%d.csv"'%(
+                            budgetHeaderInfo.budget_month,
+                            budgetHeaderInfo.budget_year)},
+        )
+
+        #Creating csv file and adding constant header first row:
+        writer = csv.writer(response)
+
+        header_file_line=["Budget ID", "Budget author", "Budget month", "Budget year","Budget available",
+                          "Line number","Item name",  "Item quantity", "Item price","Item category",
+                          "Is recurrent"]
+        writer.writerow(header_file_line)
+
+        #Adding values of budget selected:
+        
+        for line_num,line in enumerate(budgetLinesInfo):
+            writer.writerow([budgetHeaderInfo.pk,
+                            budgetHeaderInfo.budget_owner,
+                            budgetHeaderInfo.budget_month,
+                            budgetHeaderInfo.budget_year,
+                            budgetHeaderInfo.monthly_budget_available,
+                            line_num+1, # start line numbering with 1
+                            line["item_name"],
+                            line["item_quantity"],
+                            line["item_price"],
+                            line["item_category"],
+                            line["is_recurrent"],
+
+                            ])
+
+
+        return response

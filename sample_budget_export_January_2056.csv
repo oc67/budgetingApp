@@ -1,0 +1,3 @@
+Budget ID,Budget author,Budget month,Budget year,Budget available,Line number,Item name,Item quantity,Item price,Item category,Is recurrent
+3,oriolcorvo,January,2056,12,1,Rent,1,1900,Rent / mortgage,TRUE
+3,oriolcorvo,January,2056,12,2,Energy,1,300,Energy,TRUE
