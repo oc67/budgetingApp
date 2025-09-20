@@ -319,30 +319,46 @@ class budgetTransfersView(LoginRequiredMixin,View):
             
             #Check combination of month and year exist and that the budget belongs to user:
             print("all results: ",BudgetHeader.objects)
-            budgetMatchHeaderDetails=list(BudgetHeader.objects.filter(budget_month=requested_month,
+            budgetMatchHeaderDetails=BudgetHeader.objects.filter(budget_month=requested_month,
                                                                       budget_year=requested_year,
                                                                       budget_owner=request.user,
-                                                                      ))
+                                                                      )
             print("Details of matches: ",budgetMatchHeaderDetails, " whose type is ",type(budgetMatchHeaderDetails))
-            #asserting user exists (pending)
+            
+            if not budgetMatchHeaderDetails.exists():
+                messages.info(request, "No budget exists matching the date chosen")
+                return render(request, self.template_name, {"form": form})
+
+              
+
+
 
             #Get budget id from month and year:
             print("Iterating: ")
-            for line in budgetMatchHeaderDetails:
+            for line in list(budgetMatchHeaderDetails):
                 print("line is ",line, "and id is ",line.budget_ID)
                 budget_ID=line.budget_ID
-            
+
+
+            #Ensuring recipient does not own a budget with dates matching the one being transfered(pending):
+
+
             #Makes the recipient the new budget owner:
             new_owner_full_name=transfer_details["recipient_ID"]
             User = get_user_model()
-            new_owner = User.objects.get(username=new_owner_full_name)
+            try:
+                new_owner = User.objects.get(username=new_owner_full_name)
+                print("Recipient will be: ",new_owner)
+            except:
 
-            print("Recipient will be: ",new_owner)
+                messages.info(request, "Recipient %s does not exist"%new_owner_full_name)
+                return render(request, self.template_name, {"form": form})
+
             
             budget=BudgetHeader.objects.get(budget_ID=budget_ID)
             budget.budget_owner=new_owner
+            
             budget.save()
-
                
             messages.success(request, "Budget has been assigned successfully to %s"%new_owner_full_name)
             

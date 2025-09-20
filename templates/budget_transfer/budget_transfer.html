@@ -2,6 +2,43 @@
 {% load crispy_forms_tags %} 
 {% block content %}
 
+
+
+  {% if messages %}
+
+  <style>
+.messages{
+    display: inline-block; 
+      border: 1px solid rgb(0, 0, 0);
+  background-color: rgb(249, 76, 7);
+position: fixed;              /* So it floats over the page */
+top: 60px;                    /* Distance from top */
+right: 20px;                  /* Distance from right */
+}
+
+</style>
+
+  <div class="messages">
+      {% for message in messages %}
+      
+        <b> {{ message }} </b>  <br>
+      {% endfor %}
+  </div>
+
+<script>
+    // It displays either "full name chosen does not exist" message or "budget with selected
+    // month and year values" message only for 5 seconds
+    setTimeout(function() {
+        const messages = document.querySelector(".messages");
+        if (messages) {
+            messages.style.display = "none";
+        }
+    }, 5000); // in miliseconds 
+
+    </script>
+
+  {% endif %}
+
 <h2><b><u>Transfer budgets</u></b></h2>
 
 
@@ -14,7 +51,7 @@ You can transfer budgets to other app users.
 
 
 
- <button class="btn btn-success ml-2" type="submit">Update </button>
+ <button class="btn btn-success ml-2" type="submit">Transfer </button>
 </form>
 
 
