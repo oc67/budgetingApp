@@ -9,12 +9,13 @@ from django.views.generic import (ListView, DetailView,
 
 from django.views.generic.detail import SingleObjectMixin
 from .models import BudgetHeader, BudgetLines
-from .forms import budgetForm, budgetLineFormSet
+from .forms import budgetForm, budgetLineFormSet, transfersForm
 
 from django.db.models import Sum
 from django.contrib import messages
 from django.http import HttpResponse
 import csv
+from django.contrib.auth import get_user_model
 
 
 # Create your views here.
@@ -134,7 +135,7 @@ class budgetLinesGet(DetailView):
         elif expenses_variance==0:
             context["monthly_performance"]="Your expenses exactly match your budget this month"
         else:
-            context["monthly_performance"]="It seems you went out of budget. Your loss for the month is %.2f"%(-expenses_variance)
+            context["monthly_performance"]="It seems you went out of budget. Your loss for the month is £%.2f"%(-expenses_variance)
 
         #context["worksInSameCompany"]=budget.budgetOrganisation.isEqualNode(budget.budgetOrganisation)
 
@@ -252,7 +253,7 @@ class budgetExportToCSVView(LoginRequiredMixin, View):
         print("BudgetLinesInfo is", budgetLinesInfo)
 
         for line in budgetLinesInfo:
-            print("line is ",line, "and tpye is ",type(line))
+            print("line is ",line, "and type is ",type(line))
 
         # Create the HttpResponse object with the appropriate CSV header.
         response = HttpResponse(
@@ -289,3 +290,66 @@ class budgetExportToCSVView(LoginRequiredMixin, View):
 
 
         return response
+    
+
+class budgetTransfersView(LoginRequiredMixin,View):
+
+    template_name="budget_transfer/budget_transfer.html"
+
+    def get(self, request, *args, **kwargs):
+        print("getting  budget transfer menu")
+        form = transfersForm()
+
+        return render(request, self.template_name, {"form": form})
+    
+    def post(self, request, *args, **kwargs):
+        print("posting budget transfer")
+        form = transfersForm(request.POST)
+
+        #form_valid method needs to be replicated since such meth
+        if form.is_valid():
+
+            #Since we are using a simple form - not a modelform- we need to use cleaned_date instad of save():
+
+            transfer_details=form.cleaned_data
+            print("Transfer details ",transfer_details)
+            requested_month,requested_year=transfer_details["budget_month"],transfer_details["budget_year"]
+            print("Requested date: ",requested_month," ",requested_year)
+
+            
+            #Check combination of month and year exist and that the budget belongs to user:
+            print("all results: ",BudgetHeader.objects)
+            budgetMatchHeaderDetails=list(BudgetHeader.objects.filter(budget_month=requested_month,
+                                                                      budget_year=requested_year,
+                                                                      budget_owner=request.user,
+                                                                      ))
+            print("Details of matches: ",budgetMatchHeaderDetails, " whose type is ",type(budgetMatchHeaderDetails))
+            #asserting user exists (pending)
+
+            #Get budget id from month and year:
+            print("Iterating: ")
+            for line in budgetMatchHeaderDetails:
+                print("line is ",line, "and id is ",line.budget_ID)
+                budget_ID=line.budget_ID
+            
+            #Makes the recipient the new budget owner:
+            new_owner_full_name=transfer_details["recipient_ID"]
+            User = get_user_model()
+            new_owner = User.objects.get(username=new_owner_full_name)
+
+            print("Recipient will be: ",new_owner)
+            
+            budget=BudgetHeader.objects.get(budget_ID=budget_ID)
+            budget.budget_owner=new_owner
+            budget.save()
+
+               
+            messages.success(request, "Budget has been assigned successfully to %s"%new_owner_full_name)
+            
+            return redirect(
+                "budget_list")
+        
+        #for debugging purposes:
+        print("Invalid transfers form. Debugging: ")
+        print("problem with header?", form.is_valid())
+        return render

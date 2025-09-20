@@ -16,13 +16,17 @@ This app is a personal budgeting tool built to improve my software development s
 
 Features:
 
--Budgeting app with CRUD functionalities (create, read, update and delete monthly budgets generated with crispy forms).
--Authentication: users can sign up and log in.
--Expense lines mainly feature item name, category, quantity, and price
--REST Framework API that reveals budget header and lines information.
--API features authentication (sign-up and login) and authorisation aspects (only budget owners can access their budget information).
--Individual budgets can be exported to csv.
+-Authentication and Authorisation: users can sign up and log in; only budget owners can access or modify their data.
 
+-Budget ownership transfer: budgets can be securely transferred across users with authorisation checks.
+
+-REST API: exposes budget headers and lines to authenticated users.
+
+Exports: individual budgets can be exported to CSV for reporting purposes.
+
+CRUD support: create, read, update, and delete monthly budgets with crispy forms.
+
+Expense management: each expense line includes item name, category, quantity, and unit price.
 
 Tech stack:
 
@@ -32,6 +36,12 @@ Tech stack:
 
 
 Roadmap:
+
+-Notification menu to see details of inbound/outbound budget transactions.
+
+-Consuming external API to support multiple currencies
+
+-API scheme
 
 -Supporting multiple-budget exports.
 
