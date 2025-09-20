@@ -21,6 +21,7 @@ Features:
 -Expense lines mainly feature item name, category, quantity, and price
 -REST Framework API that reveals budget header and lines information.
 -API features authentication (sign-up and login) and authorisation aspects (only budget owners can access their budget information).
+-Individual budgets can be exported to csv.
 
 
 Tech stack:
@@ -31,6 +32,8 @@ Tech stack:
 
 
 Roadmap:
+
+-Supporting multiple-budget exports.
 
 -The budget header and budget lines models will be expanded to include income lines.
 

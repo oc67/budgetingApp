@@ -4,6 +4,7 @@
 
 {% block content %}
 
+
 <!--Displays the detail of the clicked article -->
 <div class="budget-entry">
     
@@ -46,8 +47,12 @@ Added expenses for the month: £{{total_expenses}}
  
     <br><br>
     <button class="btn btn-success ml-2" type="submit">Update </button>
+     <br>
     
-    <a href="{% url 'budget_delete' budget.budget_ID %}">Delete</a>
+    <a href="{% url 'budget_delete' budget.budget_ID %}" class="button">Delete</a>
+     |  
+    <a href="{% url 'budget_export' budget.budget_ID %}" class ="button">Export</a>
+    <br>
  </div>
   
 </form>
