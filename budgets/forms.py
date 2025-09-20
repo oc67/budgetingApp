@@ -5,6 +5,8 @@ from .models import BudgetHeader, BudgetLines
 from django.forms.models import inlineformset_factory
 
 
+#Budget forms for CRUD operations:
+
 class budgetForm(forms.ModelForm):
     class Meta:
         model = BudgetHeader
@@ -14,8 +16,6 @@ class budgetForm(forms.ModelForm):
             "budget_year",
             "monthly_budget_available",
             "budget_created_at",
-
-
         ]
 
         labels = {
@@ -26,9 +26,6 @@ class budgetForm(forms.ModelForm):
             "budget_month": "Budget month: ",
             "monthly_budget_available":"Money available for spending: ",
             "budget_created_at": "Budget creation date: ",
-
-
-     
         }
 
 
@@ -53,11 +50,19 @@ budgetLineFormSet = inlineformset_factory(
     can_delete=1,
 )
 
+#Form used to enable users to select budgets and specify receiver of budget:
 
-# projectName = forms.CharField(label="Project name: ", max_length=50)
+class transfersForm(forms.Form):
 
-# projectIndustry=forms.CharField(label="Industry: ",max_length=50)
-# projectSubfield=forms.CharField(label="Subfield: ",max_length=50)
-# projectBudget=forms.IntegerField(label="Budget: ")
-# teamExperienceLevel=forms.CharField(label="Experience level",max_length=6)
-# teamSize=forms.CharField(label="Size: ", max_length=6)
+    all_months=[  ("January","January"),("February","February"),("March","March"),
+        ("April","April"),("May","May"),("June","June"),
+        ("July","July"),("August","August"),("September","September"),
+        ("October","October"),("November","November"),("December","December")]
+    
+    budget_month=forms.ChoiceField(label="Budget month: ",choices=all_months)
+
+    budget_year=forms.IntegerField(label="Budget year: ")
+
+    recipient_ID=forms.CharField(label="Recipient name and surname (e.g., JohnSmith): ")
+    
+    

@@ -8,7 +8,7 @@
 <!--Displays the detail of the clicked article -->
 <div class="budget-entry">
     
-    <h2>Budget {{budget.budget_ID}}: {{budget.budget_month}} </h2>
+    <h2>Budget {{budget.budget_ID}}: {{budget.budget_month}} {{budget.budget_year}} </h2>
 </div>
 
 <hr>
@@ -42,18 +42,22 @@ Added expenses for the month: £{{total_expenses}}
             
     {% endfor %}
  
-    <button type="button" id="add-line">Add Line</button>
 
  
-    <br><br>
+
+ </div>
+     <button type="button" id="add-line">Add Line</button>
+
+     <br><br>
     <button class="btn btn-success ml-2" type="submit">Update </button>
      <br>
     
     <a href="{% url 'budget_delete' budget.budget_ID %}" class="button">Delete</a>
      |  
     <a href="{% url 'budget_export' budget.budget_ID %}" class ="button">Export</a>
+    |
+    <a href="{% url 'budget_transfer' %}" class ="button">Transfer</a>
     <br>
- </div>
   
 </form>
 

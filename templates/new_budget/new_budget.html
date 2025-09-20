@@ -24,10 +24,7 @@
     {{ form|crispy }}
     {{ formset.management_form }}
 
-Added expenses for the month: £{{total_expenses}}
 
-<br><br>
-{{monthly_performance}}
 
 <br><br>
 
@@ -43,15 +40,16 @@ Added expenses for the month: £{{total_expenses}}
             {{form.DELETE|crispy}}
 
             </div>
-    Total price of line:  
+        Total price of line: £ {{price}}
     <br><br>
     {% endfor %}
+
+
+
+   </div>
     <button type="button" id="add-line">Add Line</button>
     <br><br>
     <button class="btn btn-success ml-2" type="submit">Update </button>
-    
-
-   </div>
 </form>
 
 <!--Javascript code required to enable users to add multiple budget lines -->

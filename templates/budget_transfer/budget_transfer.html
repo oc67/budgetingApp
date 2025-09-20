@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %} 
+{% block content %}
+
+<h2><b><u>Transfer budgets</u></b></h2>
+
+
+
+You can transfer budgets to other app users.
+
+
+<form action="" method="post">{% csrf_token %}
+    {{ form|crispy }}
+
+
+
+ <button class="btn btn-success ml-2" type="submit">Update </button>
+</form>
+
+
+{% endblock content %}
