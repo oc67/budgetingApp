@@ -10,7 +10,13 @@ class BudgetHeader(models.Model):
 
     budget_ID=models.AutoField(primary_key=True)
     budget_owner=models.ForeignKey("accounts.CustomUser",null=False,blank=False,
-                                   on_delete=models.CASCADE)
+                                            on_delete=models.CASCADE, related_name="current_budgets"
+)
+    
+    #Required to keep track of original ownership of budgets:
+    original_budget_owner=models.ForeignKey("accounts.CustomUser",null=True,blank=True,
+                                            on_delete=models.SET_NULL,related_name="original_budgets"
+)
 
     all_months=         [  ("January","January"),("February","February"),("March","March"),
         ("April","April"),("May","May"),("June","June"),
@@ -37,6 +43,10 @@ class BudgetHeader(models.Model):
     def get_absolute_url(self):
         return reverse("budget_detail", kwargs={"pk": self.pk})
 
+    def save(self, *args, **kwargs):
+        if not self.pk and not self.original_owner:
+            self.original_owner = self.budget_owner
+        super().save(*args, **kwargs)
 
 class BudgetLines(models.Model):
 

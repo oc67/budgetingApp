@@ -20,6 +20,8 @@ Features:
 
 -Budget ownership transfer: budgets can be securely transferred across users with authorisation checks.
 
+-Role-based access control: users who created their budgets retain view-only permissions after transfering their budgets.
+
 -Notification menu with details of inbound/outbound budget transactions.
 
 -REST API: exposes budget headers and lines to authenticated users.

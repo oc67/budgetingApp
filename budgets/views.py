@@ -352,13 +352,20 @@ class budgetTransfersView(LoginRequiredMixin,View):
                 messages.info(request, "Recipient %s does not exist"%new_owner_full_name)
                 return render(request, self.template_name, {"form": form})
 
+
             
             budget=BudgetHeader.objects.get(budget_ID=budget_ID)
+
+            #Recording original original budget owner:
+            if not budget.original_budget_owner: 
+                budget.original_budget_owner=budget.budget_owner
+
+            #Changing ownership of budget to transfer the budget:
             budget.budget_owner=new_owner
             
             budget.save()
 
-            #Add a notification
+            #Add a transfer notification on the notification menu:
             transfer_notification=Notifications.objects.create(
                         notification_text="Budget for %s %d transfered to %s"%(requested_month,
                                                                            requested_year,
@@ -366,6 +373,8 @@ class budgetTransfersView(LoginRequiredMixin,View):
                         notification_time=datetime.now().strftime('%H:%M:%S'),
                         notification_viewer=request.user)
             
+
+
             transfer_notification.save()
             #Redirects user to budget list menu and shows success message   
             messages.success(request, "Budget has been assigned successfully to %s"%new_owner_full_name)
