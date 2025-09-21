@@ -9,6 +9,8 @@ from django.views.generic import (ListView, DetailView,
 
 from django.views.generic.detail import SingleObjectMixin
 from .models import BudgetHeader, BudgetLines
+from notifications.models import Notifications
+
 from .forms import budgetForm, budgetLineFormSet, transfersForm
 
 from django.db.models import Sum
@@ -16,6 +18,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 import csv
 from django.contrib.auth import get_user_model
+from datetime import datetime
 
 
 # Create your views here.
@@ -326,19 +329,14 @@ class budgetTransfersView(LoginRequiredMixin,View):
             print("Details of matches: ",budgetMatchHeaderDetails, " whose type is ",type(budgetMatchHeaderDetails))
             
             if not budgetMatchHeaderDetails.exists():
-                messages.info(request, "No budget exists matching the date chosen")
+                messages.info(request, "No budget matching the date chosen exists")
                 return render(request, self.template_name, {"form": form})
-
-              
-
-
 
             #Get budget id from month and year:
             print("Iterating: ")
             for line in list(budgetMatchHeaderDetails):
                 print("line is ",line, "and id is ",line.budget_ID)
                 budget_ID=line.budget_ID
-
 
             #Ensuring recipient does not own a budget with dates matching the one being transfered(pending):
 
@@ -349,8 +347,8 @@ class budgetTransfersView(LoginRequiredMixin,View):
             try:
                 new_owner = User.objects.get(username=new_owner_full_name)
                 print("Recipient will be: ",new_owner)
-            except:
 
+            except:
                 messages.info(request, "Recipient %s does not exist"%new_owner_full_name)
                 return render(request, self.template_name, {"form": form})
 
@@ -359,9 +357,18 @@ class budgetTransfersView(LoginRequiredMixin,View):
             budget.budget_owner=new_owner
             
             budget.save()
-               
-            messages.success(request, "Budget has been assigned successfully to %s"%new_owner_full_name)
+
+            #Add a notification
+            transfer_notification=Notifications.objects.create(
+                        notification_text="Budget for %s %d transfered to %s"%(requested_month,
+                                                                           requested_year,
+                                                                           new_owner_full_name),
+                        notification_time=datetime.now().strftime('%H:%M:%S'),
+                        notification_viewer=request.user)
             
+            transfer_notification.save()
+            #Redirects user to budget list menu and shows success message   
+            messages.success(request, "Budget has been assigned successfully to %s"%new_owner_full_name)
             return redirect(
                 "budget_list")
         
@@ -372,6 +379,3 @@ class budgetTransfersView(LoginRequiredMixin,View):
     
 
 
-class notificationsView(LoginRequiredMixin,View):
-
-    template_name="notifications/notifications.html"

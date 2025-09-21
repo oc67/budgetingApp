@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "accounts",
     "budgets",
     "apis",#"apis.apps.ApisConfig",
+    "notifications",
 ]
 
 MIDDLEWARE = [
