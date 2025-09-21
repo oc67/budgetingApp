@@ -49,13 +49,13 @@ right: 20px;                  /* Distance from right */
 
 <!--Displaying project list in a succint way:-->
 {% for budget in object_list %}
-{% if budget.budget_owner.pk == request.user.pk %}
+{% if budget.budget_owner.pk == request.user.pk or budget.original_budget_owner.pk == request.user.pk %}
 
     <div class="card">
         <div class="card-header">
             <span class="fw-bold">
 
-                    <a href="{{ budget.get_absolute_url }}">{{budget.budget_month}} {{budget.budget_year}} </a> 
+                    <a href="{{ budget.get_absolute_url }}">{{budget.budget_month}} {{budget.budget_year}} ({{budget.original_budget_owner}})</a> 
 
 
             </span> 
