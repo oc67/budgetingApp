@@ -4,11 +4,7 @@ from django.contrib.auth import get_user_model
 
 # Create your tests here.
 
-  #th("",budgetsListView.as_view(), name="budget_list"),
-  #th("new/",budgetCreateView.as_view(),name="new_budget"),
-  #th("<int:pk>/", budgetDetailView.as_view(), name="budget_detail"),
-  #th("<int:pk>/delete/", budgetDeleteView.as_view(), name="budget_delete"),
-
+ 
 class BudgetListTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -43,7 +39,7 @@ class BudgetListTests(TestCase):
 
     def test_template_contains_text_sample(self):
         response=self.client.get(reverse("budget_list"))
-        self.assertContains(response,"Budgets")
+        self.assertContains(response,"<h2><b><u>Budget list</u></b></h2>")
 
 
 
@@ -80,4 +76,8 @@ class NewBudgetTests(TestCase):
 
     def test_template_contains_text_sample(self):
         response=self.client.get(reverse("new_budget"))
-        self.assertContains(response,"Create a Budget")
+        self.assertContains(response,"<h2><b><u>New budget</u></b></h2>")
+
+
+
+#Missing tests for detail, delete, transfer budgets...

@@ -369,3 +369,9 @@ class budgetTransfersView(LoginRequiredMixin,View):
         print("Invalid transfers form. Debugging: ")
         print("problem with header?", form.is_valid())
         return render
+    
+
+
+class notificationsView(LoginRequiredMixin,View):
+
+    template_name="notifications/notifications.html"

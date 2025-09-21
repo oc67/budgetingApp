@@ -35,6 +35,7 @@
             <a class="nav-link active" aria-current="page" href="{% url 'budget_list' %}">Budget list</a>
             <a class="nav-link active" aria-current="page" href="{% url 'budget_performance' %}">Review performance</a>
             <a class="nav-link active" aria-current="page" href="{% url 'budget_transfer' %}">Transfer budget</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'notifications' %}">Notifications</a>
 
             </li>
         </ul>   
@@ -86,7 +87,7 @@
       <!--Boostraps removes left margins, so container class needs to be added as below:-->
 
       <main class="container mt-4">
-            <h1> Budgeting app</h1>
+            <h1> Personal budgeting app</h1>
 
       {% block content %}
       {% endblock content %}

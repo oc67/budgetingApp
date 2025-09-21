@@ -49,3 +49,9 @@ class ReviewPerformanceView(TemplateView):
 
 
         return context  
+    
+
+
+class NotificationsView(TemplateView):
+    
+    template_name="notifications/notifications.html"
