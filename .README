@@ -20,6 +20,8 @@ Features:
 
 -Budget ownership transfer: budgets can be securely transferred across users with authorisation checks.
 
+-Notification menu with details of inbound/outbound budget transactions.
+
 -REST API: exposes budget headers and lines to authenticated users.
 
 Exports: individual budgets can be exported to CSV for reporting purposes.
@@ -36,8 +38,6 @@ Tech stack:
 
 
 Roadmap:
-
--Notification menu to see details of inbound/outbound budget transactions.
 
 -Consuming external API to support multiple currencies
 

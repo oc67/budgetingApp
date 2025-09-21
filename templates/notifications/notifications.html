@@ -6,4 +6,22 @@
 
 <h2><b><u>Notifications</u></b></h2>
 
+<br><br>
+{% for notification in object_list %}
+
+    <div class="card">
+        <div class="card-header">
+
+                    {{notification.notification_time}}: {{notification.notification_text}} 
+
+
+
+        </div>  
+
+
+    </div>
+    <br>
+
+{% endfor %}
+
 {% endblock content %}
