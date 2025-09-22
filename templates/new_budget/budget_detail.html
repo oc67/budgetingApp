@@ -4,6 +4,26 @@
 
 {% block content %}
 
+<style>
+
+.line-form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.line-form > input,
+.line-form > textarea {
+    flex: 1;  /* make all children share space */
+    margin: 0 !important;
+}
+
+.line-form .form-check {
+    flex: 0;
+    margin-left: auto !important;
+}
+
+</style>
 
 <!--Displays the detail of the clicked article -->
 <div class="budget-entry">
@@ -38,7 +58,7 @@ Added expenses for the month: £{{total_expenses}}
 
             </div>
     Total price of line: £  {{price}}
-    <br>
+    <br><br>
             
     {% endfor %}
  
@@ -56,10 +76,10 @@ Added expenses for the month: £{{total_expenses}}
     <a href="{% url 'budget_delete' budget.budget_ID %}" class="button">Delete</a>
      |  
     <a href="{% url 'budget_export' budget.budget_ID %}" class ="button">Export</a>
-    |
+     |
+  {% endif %}
     <a href="{% url 'budget_transfer' %}" class ="button">Transfer</a>
     <br>
-  {% endif %}
 </form>
 
 <!--Javascript code required to display multiple insight lines -->
@@ -70,10 +90,10 @@ Added expenses for the month: £{{total_expenses}}
     const totalForms = document.querySelector('input[name="{{ formset.prefix }}-TOTAL_FORMS"]');
     const currentFormCount = parseInt(totalForms.value);
 
-    // Clone the empty form template (you need to prepare this!)
+    // Cloning the empty form template:
     const emptyFormTemplate = document.getElementById('empty-form-template').innerHTML;
 
-    // Replace __prefix__ with currentFormCount in the cloned HTML
+    // Replacing __prefix__ with currentFormCount in the cloned HTML
     const newFormHtml = emptyFormTemplate.replace(/__prefix__/g, currentFormCount);
 
     // Insert new form HTML into container
@@ -82,7 +102,6 @@ Added expenses for the month: £{{total_expenses}}
     div.innerHTML = newFormHtml;
     container.appendChild(div);
 
-    // Increment TOTAL_FORMS count
     totalForms.value = currentFormCount + 1;
     });
 });
