@@ -2,11 +2,29 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
-
-
-
-
 {% block content %}
+
+<style>
+
+.line-form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.line-form > input,
+.line-form > textarea {
+    flex: 1;  /* make all children share space */
+    margin: 0 !important;
+}
+
+.line-form .form-check {
+    flex: 0;
+    margin-left: auto !important;
+}
+
+</style>
+
 
 <!--Displays the detail of the clicked article -->
 <div class="budget-entry">
