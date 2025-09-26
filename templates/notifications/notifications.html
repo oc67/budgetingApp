@@ -8,19 +8,20 @@
 
 <br><br>
 {% for notification in object_list %}
-
+{% if notification.notification_viewer == request.user %}
     <div class="card">
         <div class="card-header">
 
-                    {{notification.notification_time}}: {{notification.notification_text}} 
-
+            
+                    {{notification.notification_time|date:"d/m/Y H:i:s" }}: {{notification.notification_text}} 
+            
 
 
         </div>  
-
-
     </div>
+
     <br>
+{% endif %}
 
 {% endfor %}
 

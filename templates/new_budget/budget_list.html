@@ -54,24 +54,31 @@ right: 20px;                  /* Distance from right */
     <div class="card">
         <div class="card-header">
             <span class="fw-bold">
+                
 
-                    <a href="{{ budget.get_absolute_url }}">{{budget.budget_month}} {{budget.budget_year}} ({{budget.original_budget_owner}})</a> 
+                    <a href="{{ budget.get_absolute_url }}">{{budget.budget_month}}
+                         {{budget.budget_year}} ({{budget.original_budget_owner}})</a> 
+                        
 
 
             </span> 
             <span class="test-muted">  
             </span> 
         </div>  
-
         <!--For each project, only the action/decision is displayed in the list-->
         <div class="card-footer">
-            {% for line in budget.lines.all %}
+            Total expenses: £{{budget.total_expenses}} | ${{budget.total_expenses_usd|floatformat:2}}
+             | €{{budget.total_expenses_eur|floatformat:2}}
+            <br>
+            <br>
+            {% for line in budget.lines_list %}
             <p>
                 <span class="fw-bold">
                     {{line.item_name }} <br> 
 
                 </span>
-                    Quantity: {{line.item_quantity }} &middot; Price £{{line.item_price}}
+                    Quantity: {{line.item_quantity }} &middot; Price £{{line.item_price}} | 
+                    ${{line.item_price_usd|floatformat:2}} | €{{line.item_price_eur|floatformat:2}}
             </p>
             {% endfor %}
         </div>

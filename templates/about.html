@@ -11,7 +11,7 @@ Find below a description of the product features.
 CRUD:
 <br><br>
 This budgeting app has a basic CRUD functionality for creating and maintaining monthly budgets.
-<br><br>
+<br><br><br>
 
 FORMS:
 <br><br>
@@ -22,11 +22,11 @@ Django crispy forms are used when creating and updating budgets.
 Budget expenses need a name, category, quantity and price per unit.
 <br>
 The app will display the total price per line once the budget is saved.
-<br><br>
+<br><br><br>
 
 
 JAVASCRIPT:
-<br>
+<br><br>
 Success message:
 <br>
 Using Javascript, success messages are shown when budgets are created or transfered successfully.
@@ -38,17 +38,17 @@ menu.
 Plots:
 <br>
 A basic feature to display a plot with the aggregated costs per category has been created.<br>
-<br><br>
+<br><br><br>
 
 AUTHENTICATION:
 <br><br>
 In order to access the website, visitors need to sign up and log in.
-<br><br>
+<br><br><br>
 
 AUTHORISATION:
 <br><br>
 Users can only view and update their own budgets.
-<br><br>
+<br><br><br>
 
 REST FRAMEWORK - API:
 <br><br>
@@ -57,17 +57,26 @@ Added basic API which reveals budget header data.
 Authentication: required to access the API.
 <br>
 Authorisation: only budget owners can view, delete, or edit information revealed at the API endpoints.
+<br><br><br>
 
+EXTERNAL API CONSUMPTION:
 <br><br>
+An external currency exchange API is consumed to convert budget values to two other currencies, USD and 
+<br>
+EUR, and display such values on several menus such as the list and detail budget views.
+<br><br><br>
+
 EXPORTS TO CSV:
 <br><br>
 Users can export individual budgets to .csv.
-<br><br>
+<br><br><br>
 TRANSFERS AMONG USERS:
 <br><br>
 Users can send budgets to other users. Inbound and outbound transactions are recorded on the notifications menu.
-<br><br>
+<br><br><br>
 ROLE-BASED ACCESS CONTROL:
 <br><br>
 Original budget owners retain view permissions after transfering their budgets.
+<br><br>
+<br>
 {% endblock content %}

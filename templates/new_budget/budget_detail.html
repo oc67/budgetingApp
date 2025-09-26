@@ -40,7 +40,8 @@
 <form action="" method="post">{% csrf_token %}
     {{ budgetHeaderForm|crispy }}
 
-Added expenses for the month: £{{total_expenses}}
+Added expenses for the month: £{{monthly_expenses_total}} | ${{monthly_expenses_total_USD|floatformat:2}}
+ | €{{monthly_expenses_total_EUR|floatformat:2}}
 
 <br><br>
 {{monthly_performance}}

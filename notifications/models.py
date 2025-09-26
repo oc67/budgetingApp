@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 class Notifications(models.Model):
@@ -11,7 +12,7 @@ class Notifications(models.Model):
     notification_text=models.CharField(max_length=500,#choices=all_notifications,
                                        null=False,blank=False)
     
-    notification_time=models.TimeField(null=False,blank=False)
+    notification_time = models.DateTimeField(default=timezone.now)
     notification_viewer=models.ForeignKey("accounts.CustomUser",null=False,blank=False,
                                    on_delete=models.CASCADE)
     

@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import (ListView, DetailView, 
                                   UpdateView, DeleteView,
                                     CreateView,FormView,
-                                    View)
+                                    View, TemplateView)
 
 from django.views.generic.detail import SingleObjectMixin
 from .models import BudgetHeader, BudgetLines
@@ -19,6 +19,7 @@ from django.http import HttpResponse
 import csv
 from django.contrib.auth import get_user_model
 from datetime import datetime
+from . import services
 
 
 # Create your views here.
@@ -85,9 +86,43 @@ class budgetsListView(LoginRequiredMixin,ListView):
     template_name="new_budget/budget_list.html"
 
     def get_queryset(self):
-        queryset=BudgetHeader.objects.order_by("-budget_year","-budget_month")
-        print("check sorted ",queryset)
-        return BudgetHeader.objects.order_by("-budget_year","-budget_month")
+        queryset=BudgetHeader.objects
+        print("check filtered ",queryset)
+        return queryset.order_by("-budget_year","-budget_month")
+    
+    def get_context_data(self, **kwargs):
+        #Required to get context from parent 
+        context = super().get_context_data(**kwargs)
+
+        #Load exchange rates from API connection, retrieving USD and EUR rates:
+        exchange_rates=services.get_exchange_rates()
+        print("exchange rates",exchange_rates)
+        print("ex ",list(exchange_rates))
+        pprint.pprint(exchange_rates)
+        usd_gbp=exchange_rates["GGP"][1]["USD"]
+        eur_gbp=exchange_rates["GGP"][1]["EUR"]
+        print("USD",usd_gbp)
+        print("EUR",eur_gbp)
+
+
+        for budget in context["object_list"]:
+            #Creating a list, if we used budget.lines.all() on template, calculated prices in USD and EUR
+            #would not be retrieved since if a list is not used, the previous operation would retrieve a new queryset 
+            budget.lines_list = list(budget.lines.all())
+
+            for line in budget.lines_list:
+                line.item_price_usd=line.item_price*usd_gbp
+                line.item_price_eur=line.item_price*eur_gbp
+                print("calculating ",line.item_price,"-->",line.item_price_usd)
+                print("calculating ",line.item_price,"-->",line.item_price_eur)
+
+            budget.total_expenses=sum([line.item_price * line.item_quantity for line in budget.lines_list])            
+            budget.total_expenses_usd=sum([line.item_price_usd * line.item_quantity for line in budget.lines_list])            
+            budget.total_expenses_eur=sum([line.item_price_eur * line.item_quantity for line in budget.lines_list])            
+
+
+        return context
+
 
 
 
@@ -113,7 +148,9 @@ class budgetLinesGet(DetailView):
         )
         #budget.budgetOrganisation = self.request.user
 
-        #Variable that adds up of all the units of each item:
+
+
+        #Variable that adds up  all the units of each item:
         total_price_per_line = [
         line.item_price * line.item_quantity for line in budget.lines.all()    ]
         context["total_price_per_line"]=total_price_per_line
@@ -129,16 +166,34 @@ class budgetLinesGet(DetailView):
 
         #Variable that computes the sum of all lines of the budget:
         expenses_across_lines=budget.lines.aggregate(total=Sum("item_price"))["total"] or 0
-        context["total_expenses"] = expenses_across_lines
-        #Variable that displays the variation of budget against spend:
-        expenses_variance=budget.monthly_budget_available-expenses_across_lines
+        context["monthly_expenses_total"] = expenses_across_lines
 
-        if expenses_variance>0:
-            context["monthly_performance"]="Well done, your profit for the month is £%.2f" %expenses_variance
-        elif expenses_variance==0:
+        #Loading exchange rates from API connection so we can convert total of expenses to other currencies:
+        exchange_rates=services.get_exchange_rates()
+        print("exchange rates",exchange_rates)
+        print("ex ",list(exchange_rates))
+        pprint.pprint(exchange_rates)
+        usd_gbp=exchange_rates["GGP"][1]["USD"]
+        eur_gbp=exchange_rates["GGP"][1]["EUR"]
+        print("USD",usd_gbp)
+        print("EUR",eur_gbp)
+
+        context["monthly_expenses_total_USD"]=expenses_across_lines*usd_gbp
+        context["monthly_expenses_total_EUR"]=expenses_across_lines*eur_gbp
+
+        #Variable that displays the variation of budget against spend:
+        monthly_profit=budget.monthly_budget_available-expenses_across_lines
+        monthly_profit_USD,monthly_profit_EUR=monthly_profit*usd_gbp, monthly_profit*eur_gbp
+
+
+        if monthly_profit>0:
+            context["monthly_performance"]="Well done, your profit for the month is £%.2f | $%.2f | €%.2f"%(
+                monthly_profit,monthly_profit_USD,monthly_profit_EUR)
+        elif monthly_profit==0:
             context["monthly_performance"]="Your expenses exactly match your budget this month"
         else:
-            context["monthly_performance"]="It seems you went out of budget. Your loss for the month is £%.2f"%(-expenses_variance)
+            context["monthly_performance"]="It seems you went out of budget. Your loss for the month is £%.2f | $%.2f | €%.2f"%(
+                -monthly_profit,-monthly_profit_USD,-monthly_profit_EUR)
 
         #context["worksInSameCompany"]=budget.budgetOrganisation.isEqualNode(budget.budgetOrganisation)
 
@@ -370,7 +425,7 @@ class budgetTransfersView(LoginRequiredMixin,View):
                         notification_text="Budget for %s %d transfered to %s"%(requested_month,
                                                                            requested_year,
                                                                            new_owner_full_name),
-                        notification_time=datetime.now().strftime('%H:%M:%S'),
+                        notification_time=datetime.now(),
                         notification_viewer=request.user)
             
 
@@ -386,5 +441,7 @@ class budgetTransfersView(LoginRequiredMixin,View):
         print("problem with header?", form.is_valid())
         return render
     
+import pprint
+
 
 
