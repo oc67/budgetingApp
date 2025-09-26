@@ -22,9 +22,11 @@ Features:
 
 -Role-based access control: users who created their budgets retain view-only permissions after transfering their budgets.
 
--Notification menu with details of inbound/outbound budget transactions.
-
 -REST API: exposes budget headers and lines to authenticated users.
+
+-Third-party integrations: connects to a currency exchange API to convert and display budget figures in GBP, USD, and EUR.
+
+-Notification menu with details of inbound/outbound budget transactions.
 
 Exports: individual budgets can be exported to CSV for reporting purposes.
 

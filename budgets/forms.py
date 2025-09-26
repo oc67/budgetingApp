@@ -24,7 +24,7 @@ class budgetForm(forms.ModelForm):
             "budget_owner": "Budget owner: ",
             "budget_year": "Budget year:",
             "budget_month": "Budget month: ",
-            "monthly_budget_available":"Money available for spending: ",
+            "monthly_budget_available":"Money available for spending (in £): ",
             "budget_created_at": "Budget creation date: ",
         }
 
@@ -41,7 +41,7 @@ budgetLineFormSet = inlineformset_factory(
     labels={
             "item_name": "Item name: ",
             "item_quantity": "Item quantity: ",
-            "item_price":"Item price:" ,
+            "item_price":"Item price (in £):" ,
             "item_category":"Item category: ",
             "is_recurrent":"Recurrent item: ",
     },

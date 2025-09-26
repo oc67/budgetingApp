@@ -44,8 +44,8 @@ class BudgetHeader(models.Model):
         return reverse("budget_detail", kwargs={"pk": self.pk})
 
     def save(self, *args, **kwargs):
-        if not self.pk and not self.original_owner:
-            self.original_owner = self.budget_owner
+        if not self.pk and not self.original_budget_owner:
+            self.original_budget_owner = self.budget_owner
         super().save(*args, **kwargs)
 
 class BudgetLines(models.Model):
