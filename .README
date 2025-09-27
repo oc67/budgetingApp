@@ -34,6 +34,8 @@ CRUD support: create, read, update, and delete monthly budgets with crispy forms
 
 Expense management: each expense line includes item name, category, quantity, and unit price.
 
+Docker: containerised app to simulate production environment conditions.
+
 Tech stack:
 
 -Front end: HTML, CSS, and Javascript (for success messages).

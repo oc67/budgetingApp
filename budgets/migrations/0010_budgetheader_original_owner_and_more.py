@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                     on_delete=django.db.models.deletion.CASCADE,
                     to=settings.AUTH_USER_MODEL,
                 ),
-                max_length=30,
+            max_length=150,
                 null=True,
             ),
         ),

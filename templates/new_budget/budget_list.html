@@ -67,8 +67,8 @@ right: 20px;                  /* Distance from right */
         </div>  
         <!--For each project, only the action/decision is displayed in the list-->
         <div class="card-footer">
-            Total expenses: £{{budget.total_expenses}} | ${{budget.total_expenses_usd|floatformat:2}}
-             | €{{budget.total_expenses_eur|floatformat:2}}
+            Total expenses: £{{budget.total_expenses}} | ${{budget.total_expenses_USD|floatformat:2}}
+             | €{{budget.total_expenses_EUR|floatformat:2}}
             <br>
             <br>
             {% for line in budget.lines_list %}
@@ -78,7 +78,7 @@ right: 20px;                  /* Distance from right */
 
                 </span>
                     Quantity: {{line.item_quantity }} &middot; Price £{{line.item_price}} | 
-                    ${{line.item_price_usd|floatformat:2}} | €{{line.item_price_eur|floatformat:2}}
+                    ${{line.item_price_USD|floatformat:2}} | €{{line.item_price_EUR|floatformat:2}}
             </p>
             {% endfor %}
         </div>

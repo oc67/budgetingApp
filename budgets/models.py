@@ -70,7 +70,7 @@ class BudgetLines(models.Model):
                           ("Entertainment","Entertainment"),
                           ("Other","Other")]
 
-    item_category=models.CharField(max_length=20,choices=item_categories_list,null=False,blank=False)
+    item_category=models.CharField(max_length=50,choices=item_categories_list,null=False,blank=False)
 
     is_recurrent=models.BooleanField(default=True,null=True,blank=True)
     item_notes=models.CharField(max_length=500, null=True,blank=True)

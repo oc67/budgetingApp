@@ -94,15 +94,15 @@ class budgetsListView(LoginRequiredMixin,ListView):
         #Required to get context from parent 
         context = super().get_context_data(**kwargs)
 
-        #Load exchange rates from API connection, retrieving USD and EUR rates:
+        #Load exchange rates from API connection, retrieving USD and EUR rates (hourly updated):
         exchange_rates=services.get_exchange_rates()
         print("exchange rates",exchange_rates)
         print("ex ",list(exchange_rates))
         pprint.pprint(exchange_rates)
-        usd_gbp=exchange_rates["GGP"][1]["USD"]
-        eur_gbp=exchange_rates["GGP"][1]["EUR"]
-        print("USD",usd_gbp)
-        print("EUR",eur_gbp)
+        USD_gbp=exchange_rates["GGP"][1]["USD"]
+        EUR_gbp=exchange_rates["GGP"][1]["EUR"]
+        print("USD",USD_gbp)
+        print("EUR",EUR_gbp)
 
 
         for budget in context["object_list"]:
@@ -111,14 +111,14 @@ class budgetsListView(LoginRequiredMixin,ListView):
             budget.lines_list = list(budget.lines.all())
 
             for line in budget.lines_list:
-                line.item_price_usd=line.item_price*usd_gbp
-                line.item_price_eur=line.item_price*eur_gbp
-                print("calculating ",line.item_price,"-->",line.item_price_usd)
-                print("calculating ",line.item_price,"-->",line.item_price_eur)
+                line.item_price_USD=line.item_price*USD_gbp
+                line.item_price_EUR=line.item_price*EUR_gbp
+                print("calculating ",line.item_price,"-->",line.item_price_USD)
+                print("calculating ",line.item_price,"-->",line.item_price_EUR)
 
             budget.total_expenses=sum([line.item_price * line.item_quantity for line in budget.lines_list])            
-            budget.total_expenses_usd=sum([line.item_price_usd * line.item_quantity for line in budget.lines_list])            
-            budget.total_expenses_eur=sum([line.item_price_eur * line.item_quantity for line in budget.lines_list])            
+            budget.total_expenses_USD=sum([line.item_price_USD * line.item_quantity for line in budget.lines_list])            
+            budget.total_expenses_EUR=sum([line.item_price_EUR * line.item_quantity for line in budget.lines_list])            
 
 
         return context
@@ -168,22 +168,23 @@ class budgetLinesGet(DetailView):
         expenses_across_lines=budget.lines.aggregate(total=Sum("item_price"))["total"] or 0
         context["monthly_expenses_total"] = expenses_across_lines
 
-        #Loading exchange rates from API connection so we can convert total of expenses to other currencies:
+        #Loading hourly-updated exchange rates from API connection:
+        # Required to convert total of expenses to other currencies (USD and EUR)
         exchange_rates=services.get_exchange_rates()
         print("exchange rates",exchange_rates)
         print("ex ",list(exchange_rates))
         pprint.pprint(exchange_rates)
-        usd_gbp=exchange_rates["GGP"][1]["USD"]
-        eur_gbp=exchange_rates["GGP"][1]["EUR"]
-        print("USD",usd_gbp)
-        print("EUR",eur_gbp)
+        USD_gbp=exchange_rates["GGP"][1]["USD"]
+        EUR_gbp=exchange_rates["GGP"][1]["EUR"]
+        print("USD",USD_gbp)
+        print("EUR",EUR_gbp)
 
-        context["monthly_expenses_total_USD"]=expenses_across_lines*usd_gbp
-        context["monthly_expenses_total_EUR"]=expenses_across_lines*eur_gbp
+        context["monthly_expenses_total_USD"]=expenses_across_lines*USD_gbp
+        context["monthly_expenses_total_EUR"]=expenses_across_lines*EUR_gbp
 
         #Variable that displays the variation of budget against spend:
         monthly_profit=budget.monthly_budget_available-expenses_across_lines
-        monthly_profit_USD,monthly_profit_EUR=monthly_profit*usd_gbp, monthly_profit*eur_gbp
+        monthly_profit_USD,monthly_profit_EUR=monthly_profit*USD_gbp, monthly_profit*EUR_gbp
 
 
         if monthly_profit>0:

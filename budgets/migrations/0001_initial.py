@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
-                ("item_name", models.CharField(max_length=20)),
+                ("item_name", models.CharField(50)),
                 ("item_quantity", models.IntegerField()),
                 (
                     "is_recurrent",
