@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                     ("Other", "Other"),
                 ],
                 default=django.utils.timezone.now,
-                max_length=20,
+                max_length=50,
             ),
             preserve_default=False,
         ),
