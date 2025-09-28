@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.views.generic import TemplateView
 
@@ -13,7 +14,7 @@ class HomePageView(TemplateView):
 class AboutPageView(TemplateView):
     template_name="about.html"
 
-class ReviewPerformanceView(TemplateView):
+class ReviewPerformanceView(LoginRequiredMixin, TemplateView):
     template_name="review_performance/budget_performance.html"
 
     def get_context_data(self,**kwargs):
