@@ -1,0 +1,4 @@
+cd "C:\Users\Oriol\Documents\Django2024\code\budgetingApp"
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+docker-compose up
