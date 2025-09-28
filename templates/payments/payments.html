@@ -1,0 +1,22 @@
+
+{% load static %}
+
+{% block title %}Stripe Checkout{% endblock title %}
+
+<head>
+    
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://js.stripe.com/v3/"></script> 
+
+    <script defer src="https://use.fontawesome.com/releases/v6.4.0/js/all.js"></script>
+  </head>
+  <body>
+  <section class="section">
+    <div class="container">
+        <h1> Budgeting app feature X</h1> <br>
+      <button class="button is-primary" id="submitBtn">Purchase feature</button>
+    </div>
+  </section>
+     <script src="{% static 'main.js' %}"></script> 
+  </body>

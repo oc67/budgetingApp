@@ -45,7 +45,15 @@ Tech stack:
 
 Roadmap:
 
--Consuming external API to support multiple currencies
+=Stripe implementation for payment
+
+-Deployment using Fly.io or Heruku
+
+-Generation of frontend using React
+
+-Implement audit trail feature
+
+-Enhancing existing tests
 
 -API scheme
 

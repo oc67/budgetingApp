@@ -36,7 +36,7 @@ class BudgetListTests(TestCase):
     
     def test_template_name_correct(self):
         response=self.client.get(reverse("budget_list"))
-        self.assertTemplateUsed(response,"budgets/budget_list.html")
+        self.assertTemplateUsed(response,"new_budget/budget_list.html")
 
     def test_template_contains_text_sample(self):
         response=self.client.get(reverse("budget_list"))
@@ -74,7 +74,7 @@ class NewBudgetTests(TestCase):
     
     def test_template_name_correct(self):
         response=self.client.get(reverse("new_budget"))
-        self.assertTemplateUsed(response,"budgets/new_budget.html")
+        self.assertTemplateUsed(response,"new_budget/new_budget.html")
 
     def test_template_contains_text_sample(self):
         response=self.client.get(reverse("new_budget"))
@@ -138,7 +138,7 @@ class NewBudgetTests(TestCase):
     
     def test_template_name_correct(self):
         response=self.client.get(reverse("new_budget"))
-        self.assertTemplateUsed(response,"budgets/new_budget.html")
+        self.assertTemplateUsed(response,"new_budget/new_budget.html")
 
     def test_template_contains_text_sample(self):
         response=self.client.get(reverse("new_budget"))

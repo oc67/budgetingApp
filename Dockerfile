@@ -5,7 +5,10 @@ FROM python:3.13.5-slim-bullseye
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
+    libssl-dev \
+    openssl \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Set environment variables
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1

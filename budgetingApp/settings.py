@@ -54,6 +54,10 @@ INSTALLED_APPS = [
     "dj_rest_auth",
     "dj_rest_auth.registration",
     "corsheaders", # security reasons
+    "sslserver",
+    "django_extensions",
+
+
 
     #"budgets.apps.BudgetsConfig",
 
@@ -63,6 +67,7 @@ INSTALLED_APPS = [
     "budgets",
     "apis",#"apis.apps.ApisConfig",
     "notifications",
+    "payments",
 ]
 
 MIDDLEWARE = [
@@ -188,3 +193,10 @@ REST_FRAMEWORK={"DEFAULT_PERMISSION_CLASSES":
                     "rest_framework.authentication.SessionAuthentication",
                     "rest_framework.authentication.TokenAuthentication",
                 ]}
+
+
+#Stripe:
+
+
+STRIPE_PUBLISHABLE_KEY = env.str("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY=env.str("STRIPE_SECRET_KEY")
