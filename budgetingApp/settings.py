@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "apis",#"apis.apps.ApisConfig",
     "notifications",
     "payments",
+    "auditTrails",
 ]
 
 MIDDLEWARE = [

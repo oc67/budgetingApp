@@ -446,3 +446,13 @@ import pprint
 
 
 
+from auditTrails.models import AuditTrail
+
+
+
+# Create your views here.
+
+# Create your views here.
+class budgetAuditTrailView(LoginRequiredMixin,ListView):
+    template_name="new_budget/budget_audit_trail.html"
+    model=AuditTrail

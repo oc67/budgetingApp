@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (budgetsListView, budgetCreateView, 
 budgetDetailView, budgetDeleteView, budgetExportToCSVView,
-budgetTransfersView)
+budgetTransfersView, budgetAuditTrailView)
 
 
 urlpatterns=[
@@ -11,6 +11,8 @@ urlpatterns=[
     path("<int:pk>/delete/", budgetDeleteView.as_view(), name="budget_delete"),
     path("<int:pk>/export/", budgetExportToCSVView.as_view(), name="budget_export"),
     path("transfer/",budgetTransfersView.as_view(),name="budget_transfer"),
+    path("<int:pk>/audit/", budgetAuditTrailView.as_view(), name="budget_audit_trail"),
+
 
 
 
