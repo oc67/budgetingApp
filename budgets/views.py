@@ -10,6 +10,7 @@ from django.views.generic import (ListView, DetailView,
 from django.views.generic.detail import SingleObjectMixin
 from .models import BudgetHeader, BudgetLines
 from notifications.models import Notifications
+from auditTrails.models import AuditTrail
 
 from .forms import budgetForm, budgetLineFormSet, transfersForm
 
@@ -61,6 +62,16 @@ class budgetCreateView(LoginRequiredMixin, CreateView):
             formset.save()
             print("saved successfully-create view")
             messages.success(request, "Budget has been created successfully")
+            
+            #Recording budget creation in audit trail:
+            budget_creation_trail_message=AuditTrail.objects.create(
+                                action_description="Budget %s has been created"%budget.budget_ID,
+                                action_time=datetime.now(),
+                                action_doer=request.user,
+                                budget=budget)            
+
+            budget_creation_trail_message.save()
+            print("Trail created for budget %d"%budget.budget_ID)
 
             return redirect(
                 "budget_list")
@@ -427,11 +438,10 @@ class budgetTransfersView(LoginRequiredMixin,View):
                                                                            requested_year,
                                                                            new_owner_full_name),
                         notification_time=datetime.now(),
-                        notification_viewer=request.user)
-            
-
+                        notification_viewer=request.user)            
 
             transfer_notification.save()
+
             #Redirects user to budget list menu and shows success message   
             messages.success(request, "Budget has been assigned successfully to %s"%new_owner_full_name)
             return redirect(
@@ -446,13 +456,24 @@ import pprint
 
 
 
-from auditTrails.models import AuditTrail
 
 
 
-# Create your views here.
 
 # Create your views here.
 class budgetAuditTrailView(LoginRequiredMixin,ListView):
     template_name="new_budget/budget_audit_trail.html"
     model=AuditTrail
+
+    def get_queryset(self):
+        budget_id = self.kwargs.get("pk")  
+        return AuditTrail.objects.filter(budget__budget_ID=budget_id)
+
+    def get_context_data(self, **kwargs):
+        context= super().get_context_data(**kwargs)
+
+        budget_id=self.kwargs.get("pk")
+        auditTrail=AuditTrail.objects.filter(budget=budget_id)
+        context["auditTrail"]=auditTrail
+
+        return context

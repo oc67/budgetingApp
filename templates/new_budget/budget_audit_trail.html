@@ -8,7 +8,7 @@
 <!--Displays the detail of the clicked article -->
 <div class="budget-entry">
     
-    <h2>Audit trail of budget {{budget.budget_ID}}: {{budget.budget_month}} {{budget.budget_year}} </h2>
+    <h2>Audit trail of budget {{auditTrail.budget.budget_ID}}: {{auditTrail.budget.budget_month}} {{auditTrail.budget.budget_year}} </h2>
 </div>
 
 <hr>
@@ -17,11 +17,14 @@
   <div id="formset-container">
     <!--Displays insight lines of budget-->
     {% for action in object_list %}
-      <div class="line-form">
+      {% if action.action_doer == auditTrail.budget.budget_owner %}
+
+        <div class="line-form">
             {{ action.action_time }}: {{ action.action_description }}
 
-            </div>
-    <br><br>
+        </div>
+      <br><br>
+    {% endif %}
             
     {% endfor %}
  

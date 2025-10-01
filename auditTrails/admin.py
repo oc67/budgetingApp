@@ -14,6 +14,8 @@ class auditTrailAdmin(admin.ModelAdmin):
         #"budget_ID",
         "action_description",
         "action_time",
+        "action_doer",
+        "budget",
 
     ]
 

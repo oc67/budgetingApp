@@ -9,4 +9,7 @@ class AuditTrail(models.Model):
     action_time=models.DateField(blank=False,null=False)
     action_description=models.CharField(max_length=500,null=False,blank=False)
 
-    budget_ID=models.ForeignKey(BudgetHeader, on_delete=models.CASCADE)
+    action_doer=models.ForeignKey("accounts.CustomUser",null=False,blank=False,
+                                            on_delete=models.CASCADE)
+    
+    budget=models.ForeignKey(BudgetHeader, on_delete=models.CASCADE)
