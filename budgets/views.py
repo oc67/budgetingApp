@@ -56,6 +56,7 @@ class budgetCreateView(LoginRequiredMixin, CreateView):
             #links owner of budget to budget (info not collected on form):
             budget=form.save(commit=False)
             budget.budget_owner=request.user
+            print("Budget id is",budget.budget_ID)
             
             budget.save()
             formset.instance = budget
@@ -153,6 +154,7 @@ class budgetLinesGet(DetailView):
         context = super().get_context_data(**kwargs) 
 
         budget = self.get_object()
+        print("retrieving budget ",budget.budget_ID)
         context["budgetHeaderForm"] = kwargs.get("form", budgetForm(instance=budget))
         context["budgetLinesForm"] = kwargs.get(
             "formset", budgetLineFormSet(instance=budget, prefix="lines")
@@ -461,19 +463,34 @@ import pprint
 
 
 # Create your views here.
+
+#Budget--> Budget_ID: 1,2,3
+
+#Audit Trail--> Audit trail ID: 1,2,3
+#               Linked to budget with ID 10,20,30
+
+# view: budget_ID--> audit Trail linked to that budget
+
 class budgetAuditTrailView(LoginRequiredMixin,ListView):
     template_name="new_budget/budget_audit_trail.html"
     model=AuditTrail
 
-    def get_queryset(self):
-        budget_id = self.kwargs.get("pk")  
-        return AuditTrail.objects.filter(budget__budget_ID=budget_id)
+    def get_queryset(self): # for audit trail values (each audit action, doer...)
+        budget_ID = self.kwargs.get("pk")  
+        print("budget id is",budget_ID)
+        print("filter output is ",AuditTrail.objects.filter(budget__budget_ID=budget_ID, budget__budget_owner=self.request.user))
+        return AuditTrail.objects.filter(budget__budget_ID=budget_ID, budget__budget_owner=self.request.user)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs): # ok
         context= super().get_context_data(**kwargs)
 
-        budget_id=self.kwargs.get("pk")
-        auditTrail=AuditTrail.objects.filter(budget=budget_id)
-        context["auditTrail"]=auditTrail
+        #Retrieving budget ID and dateL
+        budget_ID=self.kwargs.get("pk")
+        budget=BudgetHeader.objects.get(budget_ID=budget_ID)
+        context["budget"]=budget
+
+        #Filter based on owner of budget
+        #...
+        #print("retrieving ",auditTrail)
 
         return context
