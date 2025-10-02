@@ -25,37 +25,40 @@
 
 </style>
 
+<!--BUDGET TITLE-->
 <!--Displays the detail of the clicked article -->
-<div class="budget-entry">
-    
+<div class="budget-entry">    
     <h2>Budget {{budget.budget_ID}}: {{budget.budget_month}} {{budget.budget_year}} </h2>
 </div>
-
 <hr>
 
-<!--Displays all the comments -->
-<h4> Budget header</h4>
+<!--BUDGET HEADER-->
 
+<h4> Budget header</h4>
 
 <form action="" method="post">{% csrf_token %}
     {{ budgetHeaderForm|crispy }}
 
+<!--Value of sum of all the monthly expenses is shown:-->
 Added expenses for the month: £{{monthly_expenses_total}} | ${{monthly_expenses_total_USD|floatformat:2}}
  | €{{monthly_expenses_total_EUR|floatformat:2}}
-
 <br><br>
 {{monthly_performance}}
 <br><br>
 
+<!--BUDGET LINES-->
+
 <h4> Budget lines</h4>
+
   <div id="formset-container">
     {{ budgetLinesForm.management_form }}
     <!--Displays insight lines of budget-->
-    {% for form,price in form_totals %}
+    {% for frm,price in form_totals %}
+
       <div class="line-form">
-            {{ form.id }}
-            {{ form|crispy }}
-            {{form.DELETE|crispy}}
+            {{ frm.id }}
+            {{ frm|crispy }}
+            {{frm.DELETE|crispy}}
 
             </div>
     Total price of line: £  {{price}}

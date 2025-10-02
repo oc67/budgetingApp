@@ -231,57 +231,74 @@ class budgetLinesPost(SingleObjectMixin, FormView):
         self.object = self.get_object()
         return super().post(request, *args, **kwargs)
 
+    def form_invalid(self, form):
+        print("ERRORS", form.errors)
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+
     def form_valid(self, form):
         budget=self.get_object()
-        #form = budgetForm(
-        #    self.request.POST, instance=budget) 
+        form = budgetForm(
+            self.request.POST, instance=budget) 
         formset = budgetLineFormSet(self.request.POST, instance=budget, prefix="lines")
         print("form in posting is", form)
         print("formset in posting is", formset)
 
+   
+
         #checking whether formset is valid on top of form, which will always be valid because of method used
         if formset.is_valid():
             # Not comitting anything yet:
-            budgetHeaderInfo = form.save(commit=False)
+            budgetHeaderInfo = form.save()
             print("budget header info var is", budgetHeaderInfo)
-            # Saving header info:
-            budgetHeaderInfo.save()
 
             formset.instance = budgetHeaderInfo
             print("formset:", formset)
             print("instance ", formset.instance)
             formset.save()
-            #messages.success(request, "Budget has been updated successfully")
+            #Recording budget modification in audit trail:
+            budget_update_trail_message=AuditTrail.objects.create(
+                                action_description="Budget %s has been modified"%budget.budget_ID,
+                                action_time=datetime.now(),
+                                action_doer=self.request.user,
+                                budget=budget)            
+
+            budget_update_trail_message.save()
+            print("Trail updated for budget %d"%budget.budget_ID)
+
 
             print("budgetLinesPost - lines form saved")
 
+            #Required for total price per line
+            form_totals = []
+            for form_item in formset:
+                if form_item.is_valid():
+                    quantity = form_item.cleaned_data.get('item_quantity', 0)
+                    price = form_item.cleaned_data.get('item_price', 0)
+                else:
+                    quantity = form_item.initial.get('item_quantity', 0)
+                    price = form_item.initial.get('item_price', 0)
+                form_totals.append((form_item, quantity * price))#
+
             return super().form_valid(form)
         
-        #if errors exist, these are due to formset problems
-        print("ERRORS", form.errors)
-        for subform in formset:
-            print(subform.errors)
-        print("Non-form errors (general formset errors):", formset.non_form_errors())
-        print("POST data received:")
-        for key, value in self.request.POST.items():
-            print(f"{key}: {value}")
-        print("Problems in updating:")
-        print("form is fine: ", form.is_valid())
-        print("formset is fine: ", formset.is_valid())
-
-        #
-        form_totals = []
-        for form_item in formset:
-            if form_item.is_valid():
-                quantity = form_item.cleaned_data.get('item_quantity', 0)
-                price = form_item.cleaned_data.get('item_price', 0)
-            else:
-                quantity = form_item.initial.get('item_quantity', 0)
-                price = form_item.initial.get('item_price', 0)
-            form_totals.append((form_item, quantity * price))
-        
-        return self.render_to_response(
-        self.get_context_data(form=form, formset=formset))
+        else:  
+            #if errors exist, these are due to formset problems
+            print("ERRORS", form.errors)
+            for subform in formset:
+                    #Error logging:
+                print(subform.errors)
+            print("Non-form errors (general formset errors):", formset.non_form_errors())
+            print("POST data received:")
+            for key, value in self.request.POST.items():
+                print(f"{key}: {value}")
+            print("Problems in updating:")
+            print("form is fine: ", form.is_valid())
+            print("formset is fine: ", formset.is_valid())
+            
+            return self.render_to_response(
+            self.get_context_data(form=form, formset=formset))
 
     def get_success_url(self):
         budget = self.object

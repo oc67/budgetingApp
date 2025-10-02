@@ -15,7 +15,7 @@ class budgetForm(forms.ModelForm):
             "budget_month",
             "budget_year",
             "monthly_budget_available",
-            "budget_created_at",
+            #"budget_created_at",
         ]
 
         labels = {

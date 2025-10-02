@@ -35,7 +35,9 @@ class BudgetHeader(models.Model):
     # Required to display correct plural in Admin view on Django:
     class Meta:
         verbose_name_plural = "budget headers"
-        unique_together=["budget_month","budget_year"]
+        
+        #Uncommenting line below causes problem when updating a budget:
+        #unique_together=["budget_month","budget_year"] 
 
     def __str__(self):
         return str(self.budget_month)+str(self.budget_year)
