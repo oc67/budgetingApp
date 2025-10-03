@@ -145,52 +145,50 @@ class NewBudgetTests(TestCase):
         self.assertContains(response,"<h2><b><u>New budget</u></b></h2>")
 
 
-#class BudgetDetailTests(TestCase):
-#    @classmethod
-#    def setUpTestData(cls):
-#
-#        # Creating user, required for testing authentication:
-#        User = get_user_model()
-#        cls.user = User.objects.create_user(
-#            username="testuser", password="testpass1234")
-#        
-#        cls.budget=BudgetHeader.objects.create(
-#            budget_ID=500,
-#            budget_owner=cls.user,    
-#            original_budget_owner=cls.user,
-#            budget_month="January",
-#            budget_year=2000,
-#            monthly_budget_available=9000
-#            )
-#            #budget_created_at
-#
-#
-#    # Log in using user details for all the tests of this class
-#    def setUp(self):
-#        self.client.login(username="testuser", password="testpass1234")
-#
-#
-#
-#    #ensure valid page exists at url specified
-#    def test_url_exists_at_correct_location(self):
-#        budget=BudgetHeader.objects.get(budget_ID=500)
-#        response=self.client.get("/budgets/%d/"%budget.pk)
-#        self.assertEqual(response.status_code, 200)
-#
-#    #checks name given to URL matches name rendered
-#
-#    def test_url_available_by_name(self):
-#        response=self.client.get(reverse("budget_detail"))
-#        self.assertEqual(response.status_code,200)
-#
-#    
-#    def test_template_name_correct(self):
-#        response=self.client.get(reverse("budget_detail"))
-#        self.assertTemplateUsed(response,"budgets/budget_detail.html")
-#
-#    def test_template_contains_text_sample(self):
-#        response=self.client.get(reverse("budget_detail"))
-#        self.assertContains(response,"<h2>Budget ")
+
+
+
+
+class BudgetDetailTests(TestCase):
+    @classmethod
+
+    def setUpTestData(cls):
+
+        # Creating user, required for testing authentication:
+        User = get_user_model()
+        cls.user = User.objects.create_user(
+            username="testuser", password="testpass1234"
+        )
+        cls.budget=BudgetHeader.objects.create(
+            budget_ID=500,
+            budget_owner=cls.user,
+            budget_month="April",
+            budget_year="999",
+            monthly_budget_available=100,
+        )
+
+    # Log in using user details for all the tests of this class
+    def setUp(self):
+        self.client.login(username="testuser", password="testpass1234")
+
+
+    #ensure valid page exists at url specified
+    def test_url_exists_at_correct_location(self):
+        response=self.client.get("/budgets/%d/"%self.budget.pk)
+        self.assertEqual(response.status_code, 200)
+
+    def test_url_available_by_name(self):
+        response=self.client.get(reverse("budget_detail", kwargs={"pk": self.budget.pk}))
+        self.assertEqual(response.status_code,200)
+    
+    def test_template_name_correct(self):
+        response=self.client.get(reverse("budget_detail", kwargs={"pk": self.budget.pk}))
+        self.assertTemplateUsed(response,"new_budget/budget_detail.html")
+
+    def test_template_contains_text_sample(self):
+        response=self.client.get(reverse("budget_detail", kwargs={"pk": self.budget.pk}))
+        self.assertContains(response,f"<h2>Budget {self.budget.pk}: {self.budget.budget_month} {self.budget.budget_year} </h2>")
+         
 
 
 
