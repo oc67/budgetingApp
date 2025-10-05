@@ -20,8 +20,10 @@ from django.http import HttpResponse
 import csv
 from django.contrib.auth import get_user_model
 from datetime import datetime
+from django.utils import timezone
 from . import services
 
+from django.core.mail import send_mail
 
 # Create your views here.
 
@@ -66,8 +68,8 @@ class budgetCreateView(LoginRequiredMixin, CreateView):
             
             #Recording budget creation in audit trail:
             budget_creation_trail_message=AuditTrail.objects.create(
-                                action_description="Budget %s has been created"%budget.budget_ID,
-                                action_time=datetime.now(),
+                                action_description="Budget %s has been created by %s"%(budget.budget_ID,self.request.user),
+                                action_time=timezone.now(),
                                 action_doer=request.user,
                                 budget=budget)            
 
@@ -184,9 +186,9 @@ class budgetLinesGet(DetailView):
         #Loading hourly-updated exchange rates from API connection:
         # Required to convert total of expenses to other currencies (USD and EUR)
         exchange_rates=services.get_exchange_rates()
-        print("exchange rates",exchange_rates)
-        print("ex ",list(exchange_rates))
-        pprint.pprint(exchange_rates)
+        #print("exchange rates",exchange_rates)
+        #print("ex ",list(exchange_rates))
+        #pprint.pprint(exchange_rates)
         USD_gbp=exchange_rates["GGP"][1]["USD"]
         EUR_gbp=exchange_rates["GGP"][1]["EUR"]
         print("USD",USD_gbp)
@@ -212,8 +214,20 @@ class budgetLinesGet(DetailView):
         #context["worksInSameCompany"]=budget.budgetOrganisation.isEqualNode(budget.budgetOrganisation)
 
         print("Context is ", context)
+
+        #Recording budget creation in audit trail:
+        budget_view_trail_message=AuditTrail.objects.create(
+                                action_description="Budget %s has been viewed by %s"%(budget.budget_ID,self.request.user),
+                                action_time=timezone.now(),
+                                action_doer=self.request.user,
+                                budget=budget)            
+
+        budget_view_trail_message.save()
+        print("Trail updated for budget %d"%budget.budget_ID)
+
         return context
 
+   
 
 
 
@@ -259,8 +273,8 @@ class budgetLinesPost(SingleObjectMixin, FormView):
             formset.save()
             #Recording budget modification in audit trail:
             budget_update_trail_message=AuditTrail.objects.create(
-                                action_description="Budget %s has been modified"%budget.budget_ID,
-                                action_time=datetime.now(),
+                                action_description="Budget %s has been modified by %s"%(budget.budget_ID,self.request.user),
+                                action_time=timezone.now(),
                                 action_doer=self.request.user,
                                 budget=budget)            
 
@@ -442,8 +456,9 @@ class budgetTransfersView(LoginRequiredMixin,View):
             
             budget=BudgetHeader.objects.get(budget_ID=budget_ID)
 
-            #Recording original original budget owner:
-            if not budget.original_budget_owner: 
+            #Recording original original budget owner in case none had been assigned:
+            if not budget.original_budget_owner:
+                
                 budget.original_budget_owner=budget.budget_owner
 
             #Changing ownership of budget to transfer the budget:
@@ -460,6 +475,24 @@ class budgetTransfersView(LoginRequiredMixin,View):
                         notification_viewer=request.user)            
 
             transfer_notification.save()
+            #Sends email to user:
+
+           # send_mail(
+           #     "Budget transferred",
+           #     "We'd like to notify you that your budget has been transfered to %s"%new_owner_full_name,
+           #     "oriol063@gmail.com",
+           #     [new_owner.email],
+           #     fail_silently=False,
+            #)
+            #Not working because password needs to be created for SMTP access
+            send_mail(
+                "Budget received",
+                "We'd like to notify you that you have received a budget",
+                "oriol063@gmail.com",
+                [new_owner.email],
+                fail_silently=False,
+            )
+
 
             #Redirects user to budget list menu and shows success message   
             messages.success(request, "Budget has been assigned successfully to %s"%new_owner_full_name)
