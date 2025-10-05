@@ -22,13 +22,13 @@
 
 
         <div class="line-form">
-            {{ action.action_time }}: {{ action.action_description }}
+            {{ action.action_time | date:"H:i:s - d/m/Y" }}: {{ action.action_description }}
 
         </div>
-      <br><br>
+      <br>
             
     {% endfor %}
- 
+       <br><br>
 
     <p>Back to <a href="{% url 'budget_list' %}">All budgets</a>.</p>
 
